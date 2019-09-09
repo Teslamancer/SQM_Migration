@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.29201.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Mangement2SQM_w_DB", "Mangement2SQM_w_DB.pyproj", "{D8662AC3-E148-4C76-98EA-F860DC38428C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC1AAF08-6A87-4DD1-9D7D-A48601603744}"
+	ProjectSection(SolutionItems) = preProject
+		Research.txt = Research.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

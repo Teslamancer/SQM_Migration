@@ -127,13 +127,28 @@ class Graph:
                 self.generate_tree_dfs(parent, visited, tree)
         def callback():
             print(tree.get_checked())
-        submit = tk.Button(root, text="Submit", command=callback)
         
+        expanded = False
+        btn_text = tk.StringVar()
+        def expand_collapse(expanded):
+            if expanded == False:
+                expanded = True
+                tree.expand_all()
+                btn_text.set("Collapse All")
+            else:
+                expanded = False
+                tree.collapse_all()
+                btn_text.set("Expand All")
+
+        submit = tk.Button(root, text="Submit", command=callback)
+        exp_col_b = tk.Button(root, textvariable=btn_text, command = expand_collapse(expanded))        
         
         root.geometry('500x500')
         #root.resizeable()
+        exp_col_b.pack()        
         tree.pack(fill=tk.BOTH)
         submit.pack()
+        
         root.mainloop()
         
         #print(tree.state())
