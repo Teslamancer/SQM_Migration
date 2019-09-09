@@ -117,7 +117,7 @@ class Graph:
         root = tk.Tk()
         tree = CheckboxTreeview(root)
         #root.withdraw()
-        tree.pack()
+        
 
         visited = {ID:False for ID in self.id_to_name}
         for parent in self.dict:
@@ -125,8 +125,18 @@ class Graph:
                 visited[parent] = True
                 tree.insert("", "end",parent, text=self.get_name_from_id(parent))
                 self.generate_tree_dfs(parent, visited, tree)
-
+        def callback():
+            print(tree.get_checked())
+        submit = tk.Button(root, text="Submit", command=callback)
+        
+        
+        root.geometry('500x500')
+        #root.resizeable()
+        tree.pack(fill=tk.BOTH)
+        submit.pack()
         root.mainloop()
+        
+        #print(tree.state())
 
     def generate_tree_dfs(self, root, visited, tree):
         for child in self.dict[root]:
