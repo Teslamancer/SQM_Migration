@@ -1,3 +1,30 @@
 w/ Tix
 https://stackoverflow.com/questions/28483980/creating-a-treeview-with-checkboxes
 
+//These PublicIds cannot be found in BinaryFileStorage
+
+use sysco
+select pat.AccountID, pat.ProgramID, pat.TaskID, pttl.Name from ProgramAccountTask pat
+join ProgramTaskTypeLanguage pttl on pttl.TaskTypeID=pat.TaskTypeID
+where pttl.Name = 'Certification'
+
+select * from ProgramAccountTask pat
+join ProgramTaskTypeLanguage pttl on pttl.TaskTypeID=pat.TaskTypeID
+where pttl.Name = 'Certification'
+
+
+
+select * from questionresult qr
+join QuestionLanguage ql on qr.QuestionGlobalID=ql.QuestionGlobalID
+where AuditResultGlobalID='BB57EC57-7CFF-4E06-9ECE-CB7D382D2140'
+
+select f.PublicId from QuestionResult r
+    join QuestionResultBinaryFile f on r.QuestionResultSK = f.QuestionResultSK
+where r.AuditResultGlobalID = 'BB57EC57-7CFF-4E06-9ECE-CB7D382D2140'
+
+--devopsdata1
+use BinaryFileStorage
+select top 100 * from BinaryFileMetaData where PublicId in ( 
+'9148A71D-A3AC-4455-AD5D-9FE03F8A5739',
+'7F5B7A67-AAC4-445E-8A14-F530337D1239')
+
