@@ -28,3 +28,7 @@ select top 100 * from BinaryFileMetaData where PublicId in (
 '9148A71D-A3AC-4455-AD5D-9FE03F8A5739',
 '7F5B7A67-AAC4-445E-8A14-F530337D1239')
 
+So Inserting with the first publicId above worked, but the data was corrupted, probably because it inserted as a text file and it's really something else, but I can't find it in BFS to get the correct MetaData
+
+TODO: Find out hwere they live so I can get MetaData
+
