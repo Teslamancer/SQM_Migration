@@ -30,5 +30,10 @@ select top 100 * from BinaryFileMetaData where PublicId in (
 
 So Inserting with the first publicId above worked, but the data was corrupted, probably because it inserted as a text file and it's really something else, but I can't find it in BFS to get the correct MetaData
 
-TODO: Find out hwere they live so I can get MetaData
+TODO: Find out where they live so I can get MetaData
+
+The issue was BFS is different between QA, Staging, and Prod, whoops! If I insert a oublicid from the correct BFS, it works!
+Prod: dmsdata5
+Stag: stagdata2
+QA: devopsdata1
 
