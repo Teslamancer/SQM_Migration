@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Text;
 
 namespace DB_Interface
 {
@@ -11,9 +12,16 @@ namespace DB_Interface
     {
         private class Graph
         {
+            //This dictionary maps ID's to Names for Management Records and Accounts
             private Dictionary<string, string> IDtoName = new Dictionary<string, string>();
+            //This is an adjecency list of edges from parent to child nodes
             private Dictionary<string, HashSet<string>> edgeList = new Dictionary<string, HashSet<string>>();
 
+            /// <summary>
+            /// Adds an edge to the graph from a source ID to a terminal ID (both should be ManagementID or AccountID
+            /// </summary>
+            /// <param name="source">Source ID (Management or Account)</param>
+            /// <param name="terminal">Terminal ID (Management or Account)</param>
             public void addEdge(string source, string terminal)
             {
                 if (edgeList.ContainsKey(source))
@@ -26,7 +34,11 @@ namespace DB_Interface
                     edgeList[source].Add(terminal);
                 }
             }
-
+            /// <summary>
+            /// Gets all of the children as an IEnumerable for a specified Parent Node
+            /// </summary>
+            /// <param name="parentID">ManagementID to get children of</param>
+            /// <returns></returns>
             public IEnumerable<string> getChildren(string parentID)
             {
                 if (edgeList.ContainsKey(parentID))
@@ -35,7 +47,11 @@ namespace DB_Interface
                 }
                 return null;
             }
-
+            /// <summary>
+            /// Returns the name of an Account or Management Record given its ID
+            /// </summary>
+            /// <param name="ID">ID to get name of</param>
+            /// <returns></returns>
             public string getNameFromID(string ID)
             {
                 if (IDtoName.ContainsKey(ID))
@@ -47,10 +63,40 @@ namespace DB_Interface
                     return null;
                 }
             }
+            /// <summary>
+            /// Sets name for ID (Management or Account)
+            /// </summary>
+            /// <param name="ID">ID</param>
+            /// <param name="name">Name to set</param>
             public void setNameForID(string ID, string name)
             {
                 IDtoName[ID] = name;
             }
+
+            public string toDOT()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("digraph G {\n");
+                foreach(string parent in edgeList.Keys)
+                {
+                    if(!parent.Equals(""))
+                    {
+                        sb.Append('\"' + getNameFromID(parent) + '\"');
+                        sb.Append(" -> {");
+                        foreach (string child in edgeList[parent])
+                        {
+                            if (!child.Equals(""))
+                            {
+                                sb.Append('\"' + getNameFromID(child) + '\"');
+                            }
+                        }
+                        sb.Append("}\n");
+                    }
+                }
+                sb.Append("}");
+                return sb.ToString();
+            }
+            
         }
         
         /// <summary>
@@ -96,9 +142,9 @@ namespace DB_Interface
                     {
                         managementTree.setNameForID(reader.GetString(ManagementIDColNum), reader.GetString(ManagementNameColNum));
                         if (reader.IsDBNull(ParentIDColNum))
-                            managementTree.addEdge(reader.GetString(ManagementIDColNum), null);
+                            managementTree.addEdge("", reader.GetString(ManagementIDColNum));
                         else
-                            managementTree.addEdge(reader.GetString(ManagementIDColNum), reader.GetString(ParentIDColNum));
+                            managementTree.addEdge(reader.GetString(ParentIDColNum), reader.GetString(ManagementIDColNum));
                     }
                 }
             }
@@ -120,12 +166,16 @@ namespace DB_Interface
                     {
                         managementTree.setNameForID(reader.GetString(AccountIDColNum), reader.GetString(AccountNameColNum));
                         if (reader.IsDBNull(ManagementIDColNum))
-                            managementTree.addEdge(reader.GetString(AccountIDColNum), null);
+                            managementTree.addEdge("", reader.GetString(AccountIDColNum));
                         else
-                            managementTree.addEdge(reader.GetString(AccountIDColNum), reader.GetString(ManagementIDColNum));
+                            managementTree.addEdge(reader.GetString(ManagementIDColNum), reader.GetString(AccountIDColNum));
                     }
                 }
             }
+        }
+        public void printDOT()
+        {
+            Console.Write(this.managementTree.toDOT());
         }
     }
 

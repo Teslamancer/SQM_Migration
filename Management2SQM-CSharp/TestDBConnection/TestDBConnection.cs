@@ -13,6 +13,7 @@ namespace TestDBConnection
             DB2SQM cnxn = new DB2SQM("csrhstest","stagdata1");
             cnxn.getManagement();
             cnxn.getAccounts();
+            cnxn.printDOT();
         }
     }
 }
