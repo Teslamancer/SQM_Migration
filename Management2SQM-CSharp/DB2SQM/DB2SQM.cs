@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace DB_Interface
+namespace DB2SQM
 {
     /// <summary>
-    /// Represents a connection to a database and data server
+    /// Represents a connection to a database and data server that can pull and push Management, Account, and SQM information
     /// </summary>
-    public class DB2SQM
+    public class DBConnection
     {
         private class Graph
         {
@@ -33,6 +35,11 @@ namespace DB_Interface
                     edgeList.Add(source, new HashSet<string>());
                     edgeList[source].Add(terminal);
                 }
+            }
+
+            public Dictionary<string, HashSet<string>> getEdgeList()
+            {
+                return this.edgeList;
             }
             /// <summary>
             /// Gets all of the children as an IEnumerable for a specified Parent Node
@@ -77,9 +84,9 @@ namespace DB_Interface
             {
                 StringBuilder sb = new StringBuilder();
                 sb.Append("digraph G {\n");
-                foreach(string parent in edgeList.Keys)
+                foreach (string parent in edgeList.Keys)
                 {
-                    if(!parent.Equals(""))
+                    if (!parent.Equals(""))
                     {
                         sb.Append('\"' + getNameFromID(parent) + '\"');
                         sb.Append(" -> {");
@@ -96,9 +103,9 @@ namespace DB_Interface
                 sb.Append("}");
                 return sb.ToString();
             }
-            
+
         }
-        
+
         /// <summary>
         /// Database used for connection
         /// </summary>
@@ -117,10 +124,10 @@ namespace DB_Interface
         }
         private Graph managementTree = new Graph();
 
-        public DB2SQM(string db, string dataserver)
+        public DBConnection(string db, string dataserver)
         {
             this.DB = db;
-            this.DataServer = dataserver;            
+            this.DataServer = dataserver;
         }
         /// <summary>
         /// Adds all Management REcords into a graph and a dictionary that can retrieve their name from their ID
@@ -128,13 +135,13 @@ namespace DB_Interface
         public void getManagement()
         {
             string getManagements = "select * from Management\nwhere Deleted=0\norder by ParentID asc";
-            using(SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
+            using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
             {
                 SqlCommand command = new SqlCommand(getManagements, cnxn);
                 cnxn.Open();
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    
+
                     int ManagementIDColNum = reader.GetOrdinal("ManagementID");
                     int ManagementNameColNum = reader.GetOrdinal("ManagementName");
                     int ParentIDColNum = reader.GetOrdinal("ParentID");
@@ -177,8 +184,10 @@ namespace DB_Interface
         {
             Console.Write(this.managementTree.toDOT());
         }
+
+        public Dictionary<string, HashSet<string>> getEdgeList()
+        {
+            return managementTree.getEdgeList();
+        }
     }
-
-    
-
 }

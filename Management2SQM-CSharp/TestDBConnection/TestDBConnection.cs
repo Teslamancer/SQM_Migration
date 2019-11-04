@@ -1,4 +1,4 @@
-using DB_Interface;
+using DB2SQM;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -10,7 +10,7 @@ namespace TestDBConnection
         [TestMethod]
         public void TestMethod1()
         {
-            DB2SQM cnxn = new DB2SQM("csrhstest","stagdata1");
+            DBConnection cnxn = new DBConnection("csrhstest","stagdata1");
             cnxn.getManagement();
             cnxn.getAccounts();
             cnxn.printDOT();
