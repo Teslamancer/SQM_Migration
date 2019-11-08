@@ -39,30 +39,16 @@ namespace GUI
                 cnxn.getAccounts();
                 DBBox.Enabled = false;
                 DataServerBox.Enabled = false;
+                TreeViewBox.BeginUpdate();
+                TreeViewBox = cnxn.getTree();
+                TreeViewBox.EndUpdate();
 
-                
             }
             catch (Exception)
             {
                 MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
-            }
-        }
-
-        private TreeView generateTree(DBConnection dbc)
-        {
-            DBConnection cnxn = dbc;
-            foreach (string parent in cnxn.getEdgeList().Keys)
-            {                
-                foreach (string child in cnxn.getEdgeList()[parent])
-                {
-                    if (!child.Equals(""))
-                    {
-                        List<TreeNode> childrenList = new List<TreeNode>();
-                        TreeNode leaf = new TreeNode(child);
-                        childrenList.Add(leaf);
-                    }
-                    childrenList
-                }
+                DBBox.Enabled = true;
+                DataServerBox.Enabled = true;
             }
         }
     }

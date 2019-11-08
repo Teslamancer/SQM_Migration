@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace DB2SQM
 {
@@ -14,6 +15,26 @@ namespace DB2SQM
     {
         private class Graph
         {
+
+            private class Node
+            {
+                public string Name
+                {
+                    get; private set;
+                }
+                public string ID
+                {
+                    get; private set;
+                }
+                public Node parent
+                {
+                    get;private set;
+                }
+                public List<Node> children
+                {
+                    get; private set;
+                }
+            }
             //This dictionary maps ID's to Names for Management Records and Accounts
             private Dictionary<string, string> IDtoName = new Dictionary<string, string>();
             //This is an adjecency list of edges from parent to child nodes
@@ -37,10 +58,42 @@ namespace DB2SQM
                 }
             }
 
-            public Dictionary<string, HashSet<string>> getEdgeList()
+            public TreeView generateTree()
             {
-                return this.edgeList;
+                Dictionary<string, bool> visited = new Dictionary<string, bool>();
+                TreeView toReturn = new TreeView();
+                foreach (string parent in edgeList.Keys)
+                {
+                    if (!visited.ContainsKey(parent))
+                        visited.Add(parent, false);
+                    if(visited[parent] == false)
+                    {
+                        visited[parent] = true;
+                        toReturn.Nodes.Add(getNameFromID(parent));
+                        recursiveTreeGen(parent, visited, toReturn);                        
+                    }                    
+                }
+                return toReturn;
             }
+            private void recursiveTreeGen(string root, Dictionary<string, bool> visited, TreeView tree)
+            {
+                foreach (string child in edgeList[root])
+                {
+                    Console.WriteLine(tree.Nodes.IndexOfKey(root));
+                    int treelevel = tree.Nodes.IndexOfKey(root)+1;
+                    if (!child.Equals(""))
+                    {
+                        tree.Nodes[treelevel].Nodes.Add(getNameFromID(child));
+                    }
+                    if (edgeList.ContainsKey(child) && (visited.ContainsKey(child) && visited[child]==false))
+                    {
+                        visited.Add(child, true);
+                        recursiveTreeGen(child, visited, tree);
+                    }
+
+                }
+            }
+            
             /// <summary>
             /// Gets all of the children as an IEnumerable for a specified Parent Node
             /// </summary>
@@ -183,11 +236,11 @@ namespace DB2SQM
         public void printDOT()
         {
             Console.Write(this.managementTree.toDOT());
-        }
-
-        public Dictionary<string, HashSet<string>> getEdgeList()
+        }       
+        
+        public TreeView getTree()
         {
-            return managementTree.getEdgeList();
+            return managementTree.generateTree();
         }
     }
 }

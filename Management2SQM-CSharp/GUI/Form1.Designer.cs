@@ -33,7 +33,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.DBBox = new System.Windows.Forms.TextBox();
             this.SubmitButton = new System.Windows.Forms.Button();
-            this.TreeView = new System.Windows.Forms.TreeView();
+            this.TreeViewBox = new System.Windows.Forms.TreeView();
             this.SuspendLayout();
             // 
             // DataServerBox
@@ -79,23 +79,23 @@
             this.SubmitButton.UseVisualStyleBackColor = true;
             this.SubmitButton.Click += new System.EventHandler(this.SubmitButton_Click);
             // 
-            // TreeView
+            // TreeViewBox
             // 
-            this.TreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TreeViewBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TreeView.CheckBoxes = true;
-            this.TreeView.Location = new System.Drawing.Point(16, 43);
-            this.TreeView.Name = "TreeView";
-            this.TreeView.Size = new System.Drawing.Size(772, 395);
-            this.TreeView.TabIndex = 6;
+            this.TreeViewBox.CheckBoxes = true;
+            this.TreeViewBox.Location = new System.Drawing.Point(16, 43);
+            this.TreeViewBox.Name = "TreeViewBox";
+            this.TreeViewBox.Size = new System.Drawing.Size(772, 395);
+            this.TreeViewBox.TabIndex = 6;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.TreeView);
+            this.Controls.Add(this.TreeViewBox);
             this.Controls.Add(this.SubmitButton);
             this.Controls.Add(this.DBBox);
             this.Controls.Add(this.label2);
@@ -115,7 +115,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox DBBox;
         private System.Windows.Forms.Button SubmitButton;
-        private System.Windows.Forms.TreeView TreeView;
+        private System.Windows.Forms.TreeView TreeViewBox;
     }
 }
 
