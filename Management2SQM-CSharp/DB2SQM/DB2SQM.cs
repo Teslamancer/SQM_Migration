@@ -73,7 +73,8 @@ namespace DB2SQM
                     if(visited[parent] == false)
                     {
                         visited[parent] = true;
-                        TreeNode parentNode = new TreeNode(getNameFromID(parent));                        
+                        TreeNode parentNode = new TreeNode(getNameFromID(parent));
+                        parentNode.Name = parent;
                         recursiveNodeGen(parent, visited, parentNode);
                         toReturn.Nodes.Add(parentNode);
                     }                    
@@ -89,6 +90,7 @@ namespace DB2SQM
                     if (!child.Equals(""))
                     {
                         TreeNode childNode = new TreeNode(getNameFromID(child));
+                        childNode.Name = child;
                         parent.Nodes.Add(childNode);
                         if (edgeList.ContainsKey(child) && ((visited.ContainsKey(child) && visited[child] == false) || (!visited.ContainsKey(child))))
                         {
@@ -181,6 +183,7 @@ namespace DB2SQM
             private set;
         }
         private Graph managementTree = new Graph();
+        private Graph AccountFormTree = new Graph();
 
         public DBConnection(string db, string dataserver)
         {
@@ -243,9 +246,50 @@ namespace DB2SQM
             Console.Write(this.managementTree.toDOT());
         }       
         
-        public TreeView getTree()
+        public TreeView getAccountTree()
         {
             return managementTree.generateTree();
+        }
+
+        public void getFiles()
+        {
+            string getFiles = "";
+        }
+
+        public void getForms(List<string> accounts)
+        {
+            //StringBuilder sb = new StringBuilder("(");
+            foreach (string ID in accounts)
+            {
+               // sb.Append("\'" + ID + "\',");
+
+                //sb.Append(")");
+                string getForms = "select distinct AuditGlobalID from AuditAccountLookup where AccountID = \'" + ID + "\'";
+                string getFormNames = "";
+                using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
+                {
+                    SqlCommand command = new SqlCommand(getForms, cnxn);
+                    cnxn.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+
+                        int AuditGlobalIDColNum = reader.GetOrdinal("AuditGlobalID");
+                        int AuditNameColNum = reader.GetOrdinal("AuditName");
+                        //int AccountIDColNum = reader.GetOrdinal("AccountID");
+                        AccountFormTree.setNameForID(ID, managementTree.getNameFromID(ID));
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(AuditGlobalIDColNum))
+                            {
+                                AccountFormTree.addEdge(ID, reader.GetString(AuditGlobalIDColNum));
+                                AccountFormTree.setNameForID(reader.GetString(AuditGlobalIDColNum), reader.GetString(AuditNameColNum));
+                            }                                
+                            else
+                                continue;
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -34,6 +34,8 @@
             this.DBBox = new System.Windows.Forms.TextBox();
             this.SubmitButton = new System.Windows.Forms.Button();
             this.TreeViewBox = new System.Windows.Forms.TreeView();
+            this.SelectLabel = new System.Windows.Forms.Label();
+            this.SubmitAccounts = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // DataServerBox
@@ -71,7 +73,7 @@
             // 
             // SubmitButton
             // 
-            this.SubmitButton.Location = new System.Drawing.Point(368, 10);
+            this.SubmitButton.Location = new System.Drawing.Point(357, 9);
             this.SubmitButton.Name = "SubmitButton";
             this.SubmitButton.Size = new System.Drawing.Size(75, 23);
             this.SubmitButton.TabIndex = 5;
@@ -85,22 +87,44 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TreeViewBox.CheckBoxes = true;
-            this.TreeViewBox.Location = new System.Drawing.Point(16, 43);
+            this.TreeViewBox.Location = new System.Drawing.Point(16, 54);
             this.TreeViewBox.Name = "TreeViewBox";
-            this.TreeViewBox.Size = new System.Drawing.Size(772, 395);
+            this.TreeViewBox.Size = new System.Drawing.Size(772, 384);
             this.TreeViewBox.TabIndex = 6;
+            // 
+            // SelectLabel
+            // 
+            this.SelectLabel.AutoSize = true;
+            this.SelectLabel.Location = new System.Drawing.Point(13, 38);
+            this.SelectLabel.Name = "SelectLabel";
+            this.SelectLabel.Size = new System.Drawing.Size(197, 13);
+            this.SelectLabel.TabIndex = 7;
+            this.SelectLabel.Text = "Select the Suppliers and their Locations:";
+            // 
+            // SubmitAccounts
+            // 
+            this.SubmitAccounts.Location = new System.Drawing.Point(438, 9);
+            this.SubmitAccounts.Name = "SubmitAccounts";
+            this.SubmitAccounts.Size = new System.Drawing.Size(75, 23);
+            this.SubmitAccounts.TabIndex = 8;
+            this.SubmitAccounts.Text = "Submit";
+            this.SubmitAccounts.UseVisualStyleBackColor = true;
+            this.SubmitAccounts.Visible = false;
+            this.SubmitAccounts.Click += new System.EventHandler(this.SubmitAccounts_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.SelectLabel);
             this.Controls.Add(this.TreeViewBox);
-            this.Controls.Add(this.SubmitButton);
             this.Controls.Add(this.DBBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DataServerBox);
+            this.Controls.Add(this.SubmitButton);
+            this.Controls.Add(this.SubmitAccounts);
             this.Name = "Form1";
             this.Text = "Management2SQM";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -116,6 +140,8 @@
         private System.Windows.Forms.TextBox DBBox;
         private System.Windows.Forms.Button SubmitButton;
         private System.Windows.Forms.TreeView TreeViewBox;
+        private System.Windows.Forms.Label SelectLabel;
+        private System.Windows.Forms.Button SubmitAccounts;
     }
 }
 

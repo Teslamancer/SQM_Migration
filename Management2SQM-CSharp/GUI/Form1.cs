@@ -42,10 +42,11 @@ namespace GUI
                 SubmitButton.Enabled = false;
                 TreeViewBox.BeginUpdate();
                 // TreeViewBox = cnxn.getTree();
-                CopyTree(cnxn.getTree(),TreeViewBox);
+                CopyTree(cnxn.getAccountTree(),TreeViewBox);
                 //TreeViewBox.Nodes.Add("This Worked");
                 TreeViewBox.EndUpdate();
-
+                SubmitButton.Visible = false;
+                SubmitAccounts.Visible = true;
             }
             catch (Exception)
             {
@@ -53,6 +54,7 @@ namespace GUI
                 DBBox.Enabled = true;
                 DataServerBox.Enabled = true;
             }
+
         }
 
         private void CopyTree(TreeView source, TreeView copy)
@@ -61,6 +63,7 @@ namespace GUI
             foreach (TreeNode TN in source.Nodes)
             {
                 newTN = new TreeNode(TN.Text);
+                newTN.Name = TN.Name;
                 CopyTreeChildren(newTN, TN);
                 copy.Nodes.Add(newTN);
             }
@@ -72,8 +75,32 @@ namespace GUI
             foreach (TreeNode tn in toCopy.Nodes)
             {
                 newTN = new TreeNode(tn.Text);
+                newTN.Name = tn.Name;
                 parent.Nodes.Add(newTN);
                 CopyTreeChildren(newTN, tn);
+            }
+        }
+
+        private void SubmitAccounts_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                SubmitAccounts.Enabled = false;
+                TreeViewBox.Enabled = false;
+                List<string> checkedAccounts = new List<string>();
+                foreach (TreeNode node in TreeViewBox.Nodes)
+                {
+                    if (node.Checked)
+                        checkedAccounts.Add(node.Name);
+                }
+                cnxn.getForms(checkedAccounts);                
+            }
+            catch (Exception)
+            {                
+                MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
+                SubmitAccounts.Enabled = true;
+                TreeViewBox.Enabled = true;
             }
         }
     }
