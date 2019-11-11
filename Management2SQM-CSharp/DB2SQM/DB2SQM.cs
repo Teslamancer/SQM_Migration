@@ -73,29 +73,30 @@ namespace DB2SQM
                     if(visited[parent] == false)
                     {
                         visited[parent] = true;
-                        toReturn.Nodes.Add(getNameFromID(parent));
-                        recursiveTreeGen(parent, visited, toReturn, 0);                        
+                        TreeNode parentNode = new TreeNode(getNameFromID(parent));                        
+                        recursiveNodeGen(parent, visited, parentNode);
+                        toReturn.Nodes.Add(parentNode);
                     }                    
                 }
                 return toReturn;
             }
-            private void recursiveTreeGen(string root, Dictionary<string, bool> visited, TreeView tree, int TreeLevel)
+            private void recursiveNodeGen(string root, Dictionary<string, bool> visited, TreeNode parent)
             {
                 foreach (string child in edgeList[root])
                 {
                     //Console.WriteLine(tree.Nodes.IndexOfKey(root));
-                    int treelevel = TreeLevel;
+                    
                     if (!child.Equals(""))
                     {
-                        tree.Nodes[treelevel].Nodes.Add(getNameFromID(child));
+                        TreeNode childNode = new TreeNode(getNameFromID(child));
+                        parent.Nodes.Add(childNode);
+                        if (edgeList.ContainsKey(child) && ((visited.ContainsKey(child) && visited[child] == false) || (!visited.ContainsKey(child))))
+                        {
+                            visited.Add(child, true);
+                            recursiveNodeGen(child, visited, childNode);                            
+                        }
                     }
-                    if (edgeList.ContainsKey(child) && ((visited.ContainsKey(child) && visited[child]==false)||(!visited.ContainsKey(child))))
-                    {
-                        visited.Add(child, true);
-                        recursiveTreeGen(child, visited, tree, treelevel++);
-                    }
-
-                }
+                }                
             }
             
             /// <summary>
