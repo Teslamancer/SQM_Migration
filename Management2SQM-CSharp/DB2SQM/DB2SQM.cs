@@ -16,25 +16,25 @@ namespace DB2SQM
         private class Graph
         {
 
-            private class Node
-            {
-                public string Name
-                {
-                    get; private set;
-                }
-                public string ID
-                {
-                    get; private set;
-                }
-                public Node parent
-                {
-                    get;private set;
-                }
-                public List<Node> children
-                {
-                    get; private set;
-                }
-            }
+            //private class Node
+            //{
+            //    public string Name
+            //    {
+            //        get; private set;
+            //    }
+            //    public string ID
+            //    {
+            //        get; private set;
+            //    }
+            //    public Node parent
+            //    {
+            //        get;private set;
+            //    }
+            //    public List<Node> children
+            //    {
+            //        get; private set;
+            //    }
+            //}
             //This dictionary maps ID's to Names for Management Records and Accounts
             private Dictionary<string, string> IDtoName = new Dictionary<string, string>();
             //This is an adjecency list of edges from parent to child nodes
@@ -64,31 +64,35 @@ namespace DB2SQM
                 TreeView toReturn = new TreeView();
                 foreach (string parent in edgeList.Keys)
                 {
+                    if (parent.Equals(""))
+                    {
+                        continue;
+                    }
                     if (!visited.ContainsKey(parent))
                         visited.Add(parent, false);
                     if(visited[parent] == false)
                     {
                         visited[parent] = true;
                         toReturn.Nodes.Add(getNameFromID(parent));
-                        recursiveTreeGen(parent, visited, toReturn);                        
+                        recursiveTreeGen(parent, visited, toReturn, 0);                        
                     }                    
                 }
                 return toReturn;
             }
-            private void recursiveTreeGen(string root, Dictionary<string, bool> visited, TreeView tree)
+            private void recursiveTreeGen(string root, Dictionary<string, bool> visited, TreeView tree, int TreeLevel)
             {
                 foreach (string child in edgeList[root])
                 {
-                    Console.WriteLine(tree.Nodes.IndexOfKey(root));
-                    int treelevel = tree.Nodes.IndexOfKey(root)+1;
+                    //Console.WriteLine(tree.Nodes.IndexOfKey(root));
+                    int treelevel = TreeLevel;
                     if (!child.Equals(""))
                     {
                         tree.Nodes[treelevel].Nodes.Add(getNameFromID(child));
                     }
-                    if (edgeList.ContainsKey(child) && (visited.ContainsKey(child) && visited[child]==false))
+                    if (edgeList.ContainsKey(child) && ((visited.ContainsKey(child) && visited[child]==false)||(!visited.ContainsKey(child))))
                     {
                         visited.Add(child, true);
-                        recursiveTreeGen(child, visited, tree);
+                        recursiveTreeGen(child, visited, tree, treelevel++);
                     }
 
                 }

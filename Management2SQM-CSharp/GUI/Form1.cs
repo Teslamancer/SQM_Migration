@@ -39,8 +39,11 @@ namespace GUI
                 cnxn.getAccounts();
                 DBBox.Enabled = false;
                 DataServerBox.Enabled = false;
+                SubmitButton.Enabled = false;
                 TreeViewBox.BeginUpdate();
-                TreeViewBox = cnxn.getTree();
+                // TreeViewBox = cnxn.getTree();
+                CopyTree(cnxn.getTree(),TreeViewBox);
+                //TreeViewBox.Nodes.Add("This Worked");
                 TreeViewBox.EndUpdate();
 
             }
@@ -49,6 +52,28 @@ namespace GUI
                 MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
                 DBBox.Enabled = true;
                 DataServerBox.Enabled = true;
+            }
+        }
+
+        private void CopyTree(TreeView source, TreeView copy)
+        {
+            TreeNode newTN;
+            foreach (TreeNode TN in source.Nodes)
+            {
+                newTN = new TreeNode(TN.Text);
+                CopyTreeChildren(newTN, TN);
+                copy.Nodes.Add(newTN);
+            }
+        }
+
+        private void CopyTreeChildren(TreeNode parent, TreeNode toCopy)
+        {
+            TreeNode newTN;
+            foreach (TreeNode tn in toCopy.Nodes)
+            {
+                newTN = new TreeNode(tn.Text);
+                parent.Nodes.Add(newTN);
+                CopyTreeChildren(newTN, tn);
             }
         }
     }
