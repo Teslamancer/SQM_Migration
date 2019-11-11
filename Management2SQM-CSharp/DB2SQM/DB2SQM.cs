@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace DB2SQM
 {
     /// <summary>
-    /// Represents a connection to a database and data server that can pull and push Management, Account, and SQM information
+    /// Represents a connection to a database and data server that can pull and push Management, Account, and SQM information CHANGEDYCHANGE
     /// </summary>
     public class DBConnection
     {
