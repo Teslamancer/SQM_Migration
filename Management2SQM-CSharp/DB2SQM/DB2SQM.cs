@@ -255,7 +255,7 @@ namespace DB2SQM
         {
             string getFiles = "";
         }
-
+        //THIS WILL RUN FOR MANAGEMENTS TOO
         public void getForms(List<string> accounts)
         {
             //StringBuilder sb = new StringBuilder("(");
