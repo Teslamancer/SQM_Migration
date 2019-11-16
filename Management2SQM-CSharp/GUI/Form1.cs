@@ -36,6 +36,7 @@ namespace GUI
             {
                 cnxn = new DBConnection(DBBox.Text, DataServerBox.Text);
                 cnxn.getManagement();
+
                 cnxn.getAccounts();
                 DBBox.Enabled = false;
                 DataServerBox.Enabled = false;
@@ -46,7 +47,7 @@ namespace GUI
                 //TreeViewBox.Nodes.Add("This Worked");
                 TreeViewBox.EndUpdate();
                 SubmitButton.Visible = false;
-                SubmitAccounts.Visible = true;
+                SubmitSuppliers.Visible = true;
             }
             catch (Exception)
             {
@@ -81,26 +82,92 @@ namespace GUI
             }
         }
 
-        private void SubmitAccounts_Click(object sender, EventArgs e)
+        private void SubmitSuppliers_Click(object sender, EventArgs e)
         {
-
+            TreeView backup = new TreeView();
             try
             {
-                SubmitAccounts.Enabled = false;
+                SubmitSuppliers.Enabled = false;
                 TreeViewBox.Enabled = false;
-                List<string> checkedAccounts = new List<string>();
-                foreach (TreeNode node in TreeViewBox.Nodes)
-                {
-                    if (node.Checked)
-                        checkedAccounts.Add(node.Name);
-                }
-                cnxn.getForms(checkedAccounts);                
+                
+                cnxn.getForms(TreeViewBox.getChecked());
+                
+                CopyTree(TreeViewBox, backup);
+                TreeViewBox.BeginUpdate();
+                TreeViewBox.Nodes.Clear();
+                CopyTree(cnxn.getFormTree(), TreeViewBox);
+                TreeViewBox.EndUpdate();
+                TreeViewBox.Enabled = true;
+                SelectLabel.Text = "Please select Forms to search for attachments:";
+                SubmitSuppliers.Visible = false;
             }
             catch (Exception)
             {                
                 MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
-                SubmitAccounts.Enabled = true;
+                SubmitSuppliers.Enabled = true;
+                TreeViewBox.BeginUpdate();
+                TreeViewBox.Nodes.Clear();
+                CopyTree(backup, TreeViewBox);
+                TreeViewBox.EndUpdate();
                 TreeViewBox.Enabled = true;
+                TreeViewBox.Enabled = true;
+                SubmitSuppliers.Visible = true;
+            }
+        }
+
+        private void SubmitFormsButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SubmitFormsButton.Enabled = false;
+
+                SubmitFormsButton.Visible = false;
+            }
+            catch (Exception)
+            {
+                SubmitFormsButton.Enabled = true;
+                SubmitFormsButton.Visible = true;
+            }
+        }
+    }
+    public static class extTreeView
+    {
+        public static IEnumerable<string> getChecked(this TreeView tv)
+        {
+            Dictionary<string, bool> visited = new Dictionary<string, bool>();
+            HashSet<string> toReturn = new HashSet<string>();
+            foreach(TreeNode parent in tv.Nodes)
+            {
+                if (!visited.ContainsKey(parent.Name))
+                    visited.Add(parent.Name, false);
+                if (visited[parent.Name] == false)
+                {
+                    visited[parent.Name] = true;
+                    if (parent.Checked)
+                        toReturn.Add(parent.Name);
+                    recursiveNodeChecker(visited, parent, toReturn);
+                }
+            }
+            return toReturn;
+        }
+
+        private static void recursiveNodeChecker(Dictionary<string, bool> visited, TreeNode parent, HashSet<string> checkedList)
+        {
+            foreach (TreeNode child in parent.Nodes)
+            {
+                //Console.WriteLine(tree.Nodes.IndexOfKey(root));
+
+                if ((visited.ContainsKey(child.Name) && !visited[child.Name]) || !visited.ContainsKey(child.Name))
+                {
+                    visited[child.Name] = true;
+                    if (!child.Name.Equals(""))
+                    {
+                        if (child.Checked)
+                            checkedList.Add(child.Name);
+
+                        recursiveNodeChecker(visited, child, checkedList);
+                    } 
+                }
             }
         }
     }

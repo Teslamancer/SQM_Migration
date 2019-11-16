@@ -62,22 +62,21 @@ namespace DB2SQM
             {
                 Dictionary<string, bool> visited = new Dictionary<string, bool>();
                 TreeView toReturn = new TreeView();
-                foreach (string parent in edgeList.Keys)
+                foreach (string parent in edgeList[""])
                 {
-                    if (parent.Equals(""))
-                    {
-                        continue;
-                    }
-                    if (!visited.ContainsKey(parent))
-                        visited.Add(parent, false);
-                    if(visited[parent] == false)
-                    {
-                        visited[parent] = true;
-                        TreeNode parentNode = new TreeNode(getNameFromID(parent));
-                        parentNode.Name = parent;
-                        recursiveNodeGen(parent, visited, parentNode);
-                        toReturn.Nodes.Add(parentNode);
-                    }                    
+                    
+                        if (!visited.ContainsKey(parent))
+                            visited.Add(parent, false);
+                        if (visited[parent] == false)
+                        {
+                            visited[parent] = true;
+                            TreeNode parentNode = new TreeNode(getNameFromID(parent));
+                            parentNode.Name = parent;
+                            if (edgeList.ContainsKey(parent))                        
+                                recursiveNodeGen(parent, visited, parentNode);                         
+                            toReturn.Nodes.Add(parentNode);
+                        }
+                   
                 }
                 return toReturn;
             }
@@ -251,12 +250,17 @@ namespace DB2SQM
             return managementTree.generateTree();
         }
 
+        public TreeView getFormTree()
+        {
+            return AccountFormTree.generateTree();
+        }
+
         public void getFiles()
         {
             string getFiles = "";
         }
         //THIS WILL RUN FOR MANAGEMENTS TOO
-        public void getForms(List<string> accounts)
+        public void getForms(IEnumerable<string> accounts)
         {
             //StringBuilder sb = new StringBuilder("(");
             foreach (string ID in accounts)
@@ -264,8 +268,8 @@ namespace DB2SQM
                // sb.Append("\'" + ID + "\',");
 
                 //sb.Append(")");
-                string getForms = "select distinct AuditGlobalID from AuditAccountLookup where AccountID = \'" + ID + "\'";
-                string getFormNames = "";
+                string getForms = "select distinct aal.AuditGlobalID, al.AuditName from AuditAccountLookup aal join AuditLanguage al on aal.AuditGlobalID = al.AuditGlobalID where aal.AccountID = \'" + ID + "\'";
+                //string getFormNames = "select * from auditlanguage where AuditGlobalID=\'";
                 using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
                 {
                     SqlCommand command = new SqlCommand(getForms, cnxn);
@@ -281,8 +285,8 @@ namespace DB2SQM
                         {
                             if (!reader.IsDBNull(AuditGlobalIDColNum))
                             {
-                                AccountFormTree.addEdge(ID, reader.GetString(AuditGlobalIDColNum));
-                                AccountFormTree.setNameForID(reader.GetString(AuditGlobalIDColNum), reader.GetString(AuditNameColNum));
+                                AccountFormTree.addEdge(ID, reader.GetGuid(AuditGlobalIDColNum).ToString());
+                                AccountFormTree.setNameForID(reader.GetGuid(AuditGlobalIDColNum).ToString(), reader.GetString(AuditNameColNum));                                
                             }                                
                             else
                                 continue;
@@ -290,6 +294,11 @@ namespace DB2SQM
                     }
                 }
             }
+        }
+
+        public void getSQMLocationOptions()
+        {
+
         }
     }
 }
