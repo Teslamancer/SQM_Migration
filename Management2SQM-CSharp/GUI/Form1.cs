@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DB2SQM;
 
+
 namespace GUI
 {
     public partial class Form1 : Form
     {
+        
         public static DBConnection cnxn;
         public Form1()
         {
@@ -88,18 +90,19 @@ namespace GUI
             try
             {
                 SubmitSuppliers.Enabled = false;
-                TreeViewBox.Enabled = false;
-                
-                cnxn.getForms(TreeViewBox.getChecked());
+                TreeViewBox.Enabled = false;          
                 
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
+                TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
                 TreeViewBox.Nodes.Clear();
-                CopyTree(cnxn.getFormTree(), TreeViewBox);
+                CopyTree(LocationTree, TreeViewBox);
                 TreeViewBox.EndUpdate();
                 TreeViewBox.Enabled = true;
-                SelectLabel.Text = "Please select Forms to search for attachments:";
+                SelectLabel.Text = "Please select Locations for SQM";
                 SubmitSuppliers.Visible = false;
+                SubmitLocationsButton.Enabled = true;
+                SubmitLocationsButton.Visible = true;
             }
             catch (Exception)
             {                
@@ -115,18 +118,69 @@ namespace GUI
             }
         }
 
-        private void SubmitFormsButton_Click(object sender, EventArgs e)
-        {
+        private void SubmitLocationsButton_Click(object sender, EventArgs e)
+        {        
+            TreeView backup = new TreeView();
             try
             {
-                SubmitFormsButton.Enabled = false;
+                SubmitLocationsButton.Enabled = false;
+                SubmitLocationsButton.Visible = false;
+                TreeViewBox.Enabled = false;
 
-                SubmitFormsButton.Visible = false;
+                CopyTree(TreeViewBox, backup);
+                TreeViewBox.BeginUpdate();
+                TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
+                TreeViewBox.Nodes.Clear();
+                CopyTree(LocationTree, TreeViewBox);
+                TreeViewBox.EndUpdate();
+                TreeViewBox.Enabled = true;
+                SelectLabel.Text = "Please select Materials for SQM";
+                SubmitSuppliers.Visible = false;
             }
             catch (Exception)
             {
-                SubmitFormsButton.Enabled = true;
-                SubmitFormsButton.Visible = true;
+                MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
+                SubmitLocationsButton.Enabled = true;
+                SubmitLocationsButton.Visible = true;
+                TreeViewBox.BeginUpdate();
+                TreeViewBox.Nodes.Clear();
+                CopyTree(backup, TreeViewBox);
+                TreeViewBox.EndUpdate();
+                TreeViewBox.Enabled = true;
+                TreeViewBox.Enabled = true;                
+            }
+        }
+
+        private void SubmitMaterialsButton_Click(object sender, EventArgs e)
+        {
+            TreeView backup = new TreeView();
+            try
+            {
+                SubmitMaterialsButton.Enabled = false;
+                SubmitMaterialsButton.Visible = false;
+                TreeViewBox.Enabled = false;
+
+                CopyTree(TreeViewBox, backup);
+                TreeViewBox.BeginUpdate();
+                TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
+                TreeViewBox.Nodes.Clear();
+                CopyTree(LocationTree, TreeViewBox);
+                TreeViewBox.EndUpdate();
+                TreeViewBox.Enabled = true;
+                SelectLabel.Text = "Please select Forms for each level to search for Certs";
+                SubmitSuppliers.Visible = false;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
+                SubmitMaterialsButton.Enabled = true;
+                SubmitMaterialsButton.Visible = true;
+                TreeViewBox.BeginUpdate();
+                TreeViewBox.Nodes.Clear();
+                CopyTree(backup, TreeViewBox);
+                TreeViewBox.EndUpdate();
+                TreeViewBox.Enabled = true;
+                TreeViewBox.Enabled = true;
             }
         }
     }

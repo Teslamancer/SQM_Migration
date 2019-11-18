@@ -36,7 +36,8 @@
             this.TreeViewBox = new System.Windows.Forms.TreeView();
             this.SelectLabel = new System.Windows.Forms.Label();
             this.SubmitSuppliers = new System.Windows.Forms.Button();
-            this.SubmitFormsButton = new System.Windows.Forms.Button();
+            this.SubmitLocationsButton = new System.Windows.Forms.Button();
+            this.SubmitMaterialsButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // DataServerBox
@@ -45,6 +46,7 @@
             this.DataServerBox.Name = "DataServerBox";
             this.DataServerBox.Size = new System.Drawing.Size(100, 20);
             this.DataServerBox.TabIndex = 1;
+            this.DataServerBox.Text = "stagdata1";
             // 
             // label1
             // 
@@ -71,6 +73,7 @@
             this.DBBox.Name = "DBBox";
             this.DBBox.Size = new System.Drawing.Size(100, 20);
             this.DBBox.TabIndex = 4;
+            this.DBBox.Text = "csrhstest";
             // 
             // SubmitButton
             // 
@@ -111,25 +114,37 @@
             this.SubmitSuppliers.Text = "Submit";
             this.SubmitSuppliers.UseVisualStyleBackColor = true;
             this.SubmitSuppliers.Visible = false;
-            this.SubmitSuppliers.Click += new System.EventHandler(this.SubmitAccounts_Click);
+            this.SubmitSuppliers.Click += new System.EventHandler(this.SubmitSuppliers_Click);
             // 
-            // SubmitFormsButton
+            // SubmitLocationsButton
             // 
-            this.SubmitFormsButton.Location = new System.Drawing.Point(519, 9);
-            this.SubmitFormsButton.Name = "SubmitFormsButton";
-            this.SubmitFormsButton.Size = new System.Drawing.Size(75, 23);
-            this.SubmitFormsButton.TabIndex = 9;
-            this.SubmitFormsButton.Text = "Submit";
-            this.SubmitFormsButton.UseVisualStyleBackColor = true;
-            this.SubmitFormsButton.Visible = false;
-            this.SubmitFormsButton.Click += new System.EventHandler(this.SubmitFormsButton_Click);
+            this.SubmitLocationsButton.Location = new System.Drawing.Point(519, 9);
+            this.SubmitLocationsButton.Name = "SubmitLocationsButton";
+            this.SubmitLocationsButton.Size = new System.Drawing.Size(75, 23);
+            this.SubmitLocationsButton.TabIndex = 9;
+            this.SubmitLocationsButton.Text = "Submit";
+            this.SubmitLocationsButton.UseVisualStyleBackColor = true;
+            this.SubmitLocationsButton.Visible = false;
+            this.SubmitLocationsButton.Click += new System.EventHandler(this.SubmitLocationsButton_Click);
+            // 
+            // SubmitMaterialsButton
+            // 
+            this.SubmitMaterialsButton.Location = new System.Drawing.Point(600, 9);
+            this.SubmitMaterialsButton.Name = "SubmitMaterialsButton";
+            this.SubmitMaterialsButton.Size = new System.Drawing.Size(75, 23);
+            this.SubmitMaterialsButton.TabIndex = 10;
+            this.SubmitMaterialsButton.Text = "Submit";
+            this.SubmitMaterialsButton.UseVisualStyleBackColor = true;
+            this.SubmitMaterialsButton.Visible = false;
+            this.SubmitMaterialsButton.Click += new System.EventHandler(this.SubmitMaterialsButton_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.SubmitFormsButton);
+            this.Controls.Add(this.SubmitMaterialsButton);
+            this.Controls.Add(this.SubmitLocationsButton);
             this.Controls.Add(this.SelectLabel);
             this.Controls.Add(this.TreeViewBox);
             this.Controls.Add(this.DBBox);
@@ -155,7 +170,8 @@
         private System.Windows.Forms.TreeView TreeViewBox;
         private System.Windows.Forms.Label SelectLabel;
         private System.Windows.Forms.Button SubmitSuppliers;
-        private System.Windows.Forms.Button SubmitFormsButton;
+        private System.Windows.Forms.Button SubmitLocationsButton;
+        private System.Windows.Forms.Button SubmitMaterialsButton;
     }
 }
 
