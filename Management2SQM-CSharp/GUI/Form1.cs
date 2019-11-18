@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DB2SQM;
+using System.Runtime.InteropServices;
 
 
 namespace GUI
@@ -94,9 +95,16 @@ namespace GUI
                 
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
-                TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
+                TreeView LocationTree = cnxn.getAccountTree();
                 TreeViewBox.Nodes.Clear();
                 CopyTree(LocationTree, TreeViewBox);
+                foreach (string ID in backup.getChecked())
+                {
+                    //TreeViewBox.FindNode(ID).BeginEdit();
+                    //TreeViewBox.FindNode(ID).
+                    //TreeViewBox.FindNode(ID).EndEdit(false);
+                    TreeViewBox.HideCheckBox(TreeViewBox.FindNode(ID));
+                }
                 TreeViewBox.EndUpdate();
                 TreeViewBox.Enabled = true;
                 SelectLabel.Text = "Please select Locations for SQM";
@@ -221,6 +229,88 @@ namespace GUI
 
                         recursiveNodeChecker(visited, child, checkedList);
                     } 
+                }
+            }
+        }
+        public const int TVIF_STATE = 0x8;
+        public const int TVIS_STATEIMAGEMASK = 0xF000;
+        public const int TV_FIRST = 0x1100;
+        public const int TVM_SETITEM = TV_FIRST + 63;
+
+        public struct TVITEM
+        {
+            public int mask;
+            public IntPtr hItem;
+            public int state;
+            public int stateMask;
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public String lpszText;
+            public int cchTextMax;
+            public int iImage;
+            public int iSelectedImage;
+            public int cChildren;
+            public IntPtr lParam;
+        }
+
+        [DllImport("user32.dll")]
+        static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        /// <summary>
+        /// Hides the checkbox for the specified node on a TreeView control.
+        /// </summary>
+        public static void HideCheckBox(this TreeView tvw, TreeNode node)
+        {
+            TVITEM tvi = new TVITEM();
+            tvi.hItem = node.Handle;
+            tvi.mask = TVIF_STATE;
+            tvi.stateMask = TVIS_STATEIMAGEMASK;
+            tvi.state = 0;
+            IntPtr lparam = Marshal.AllocHGlobal(Marshal.SizeOf(tvi));
+            Marshal.StructureToPtr(tvi, lparam, false);
+            SendMessage(tvw.Handle, TVM_SETITEM, IntPtr.Zero, lparam);
+        }
+
+        public static TreeNode FindNode(this TreeView tv, string ID)
+        {
+            Dictionary<string, bool> visited = new Dictionary<string, bool>();
+            TreeNode toReturn = new TreeNode();
+            foreach (TreeNode parent in tv.Nodes)
+            {
+                if (!visited.ContainsKey(parent.Name))
+                    visited.Add(parent.Name, false);
+                if (visited[parent.Name] == false)
+                {
+                    visited[parent.Name] = true;
+                    if (parent.Name.Equals(ID))
+                    {
+                        toReturn = parent;
+                        break;
+                    }
+                    else
+                        recursiveNodeFinder(visited, parent, toReturn, ID);
+                }
+            }
+            return toReturn;
+        }
+
+        private static void recursiveNodeFinder(Dictionary<string, bool> visited, TreeNode parent, TreeNode toReturn, string ID)
+        {
+            foreach (TreeNode child in parent.Nodes)
+            {
+                //Console.WriteLine(tree.Nodes.IndexOfKey(root));
+
+                if ((visited.ContainsKey(child.Name) && !visited[child.Name]) || !visited.ContainsKey(child.Name))
+                {
+                    visited[child.Name] = true;
+                    if (!child.Name.Equals(""))
+                    {
+                        if (child.Name.Equals(ID))
+                        {
+                            toReturn = child;
+                            break;
+                        }
+                        else
+                            recursiveNodeFinder(visited, child, toReturn, ID);
+                    }
                 }
             }
         }
