@@ -226,6 +226,24 @@ namespace DB2SQM
                 return sb.ToString();
             }
 
+            public Graph Clone()
+            {
+                Graph toReturn = new Graph();
+                foreach (string ID in this.IDtoName.Keys)
+                {
+                    toReturn.setNameForID(ID, this.getNameFromID(ID));
+                }
+                foreach(string parent in this.edgeList.Keys)
+                {
+                    foreach(string child in this.getChildren(parent))
+                    {
+                        toReturn.addEdge(parent, child);
+
+                    }
+                }
+                return toReturn;
+            }
+
         }
 
         /// <summary>
@@ -247,13 +265,19 @@ namespace DB2SQM
         private Graph managementTree = new Graph();
         private Graph AccountFormTree = new Graph();
 
+        private Graph overallTree = new Graph();
+        private Dictionary<string, string> suppliers = new Dictionary<string, string>();
+        private Dictionary<string, string> locations = new Dictionary<string, string>();
+        private Dictionary<string, string> materials = new Dictionary<string, string>();
+        private Dictionary<string, HashSet<string>> IDtoBFS = new Dictionary<string, HashSet<string>>();
+        public HashSet<string> AccountsForForms = new HashSet<string>();
         public DBConnection(string db, string dataserver)
         {
             this.DB = db;
             this.DataServer = dataserver;
         }
         /// <summary>
-        /// Adds all Management REcords into a graph and a dictionary that can retrieve their name from their ID
+        /// Adds all Management Records into a graph and a dictionary that can retrieve their name from their ID
         /// </summary>
         public void getManagement()
         {
@@ -307,6 +331,8 @@ namespace DB2SQM
         {
             Console.Write(this.managementTree.toDOT());
         }       
+
+
         
         public TreeView getAccountTree()
         {
@@ -361,6 +387,7 @@ namespace DB2SQM
 
         public TreeView getSQMLocationOptionsTree(IEnumerable<string> toRemove)
         {
+            overallTree = managementTree.Clone();
             foreach (string ID in toRemove)
                 managementTree.remove(ID);
             return managementTree.generateTree();

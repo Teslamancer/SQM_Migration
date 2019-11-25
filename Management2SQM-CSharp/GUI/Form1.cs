@@ -94,6 +94,7 @@ namespace GUI
                 
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
+                cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
                 TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
                 TreeViewBox.Nodes.Clear();
                 CopyTree(LocationTree, TreeViewBox);
@@ -129,6 +130,7 @@ namespace GUI
 
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
+                cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
                 TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
                 TreeViewBox.Nodes.Clear();
                 CopyTree(LocationTree, TreeViewBox);
@@ -136,6 +138,8 @@ namespace GUI
                 TreeViewBox.Enabled = true;
                 SelectLabel.Text = "Please select Materials for SQM";
                 SubmitSuppliers.Visible = false;
+                SubmitMaterialsButton.Visible = true;
+                SubmitMaterialsButton.Enabled = true;
             }
             catch (Exception)
             {
@@ -159,12 +163,13 @@ namespace GUI
                 SubmitMaterialsButton.Enabled = false;
                 SubmitMaterialsButton.Visible = false;
                 TreeViewBox.Enabled = false;
-
+                cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
+                cnxn.getForms(cnxn.AccountsForForms);
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
-                TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
+                TreeView FormTree = cnxn.getFormTree();
                 TreeViewBox.Nodes.Clear();
-                CopyTree(LocationTree, TreeViewBox);
+                CopyTree(FormTree, TreeViewBox);
                 TreeViewBox.EndUpdate();
                 TreeViewBox.Enabled = true;
                 SelectLabel.Text = "Please select Forms for each level to search for Certs";
