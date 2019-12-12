@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 namespace DB2SQM
 {
     /// <summary>
-    /// Represents a connection to a database and data server that can pull and push Management, Account, and SQM information CHANGEDYCHANGE
+    /// Represents a connection to a database and data server that can pull and push Management, Account, and SQM information
     /// </summary>
     public class DBConnection
     {
@@ -95,11 +95,12 @@ namespace DB2SQM
                 }
             }
 
-            public TreeView generateTree()
+            public TreeView generateTree(string root)
             {
                 Dictionary<string, bool> visited = new Dictionary<string, bool>();
                 TreeView toReturn = new TreeView();
-                foreach (string parent in edgeList[""])
+                //TODO: This is not working for the Forms Tree because there is no root parent of ""
+                foreach (string parent in edgeList[root])
                 {
                     
                         if (!visited.ContainsKey(parent))
@@ -117,8 +118,31 @@ namespace DB2SQM
                 }
                 return toReturn;
             }
-            private void recursiveNodeGen(string root, Dictionary<string, bool> visited, TreeNode parent)
+            public TreeView generateTree()
             {
+                Dictionary<string, bool> visited = new Dictionary<string, bool>();
+                TreeView toReturn = new TreeView();
+                //TODO: This is not working for the Forms Tree because there is no root parent of ""
+                foreach (string parent in edgeList.Keys)
+                {
+
+                    if (!visited.ContainsKey(parent))
+                        visited.Add(parent, false);
+                    if (visited[parent] == false)
+                    {
+                        visited[parent] = true;
+                        TreeNode parentNode = new TreeNode(getNameFromID(parent));
+                        parentNode.Name = parent;
+                        if (edgeList.ContainsKey(parent))
+                            recursiveNodeGen(parent, visited, parentNode);
+                        toReturn.Nodes.Add(parentNode);
+                    }
+
+                }
+                return toReturn;
+            }
+            private void recursiveNodeGen(string root, Dictionary<string, bool> visited, TreeNode parent)
+            {                
                 foreach (string child in edgeList[root])
                 {
                     //Console.WriteLine(tree.Nodes.IndexOfKey(root));
@@ -336,7 +360,7 @@ namespace DB2SQM
         
         public TreeView getAccountTree()
         {
-            return managementTree.generateTree();
+            return managementTree.generateTree("");
         }
 
         public TreeView getFormTree()
@@ -369,13 +393,14 @@ namespace DB2SQM
                         int AuditGlobalIDColNum = reader.GetOrdinal("AuditGlobalID");
                         int AuditNameColNum = reader.GetOrdinal("AuditName");
                         //int AccountIDColNum = reader.GetOrdinal("AccountID");
-                        AccountFormTree.setNameForID(ID, managementTree.getNameFromID(ID));
+                        
                         while (reader.Read())
                         {
                             if (!reader.IsDBNull(AuditGlobalIDColNum))
                             {
                                 AccountFormTree.addEdge(ID, reader.GetGuid(AuditGlobalIDColNum).ToString());
-                                AccountFormTree.setNameForID(reader.GetGuid(AuditGlobalIDColNum).ToString(), reader.GetString(AuditNameColNum));                                
+                                AccountFormTree.setNameForID(reader.GetGuid(AuditGlobalIDColNum).ToString(), reader.GetString(AuditNameColNum));
+                                AccountFormTree.setNameForID(ID, managementTree.getNameFromID(ID));
                             }                                
                             else
                                 continue;
@@ -390,7 +415,7 @@ namespace DB2SQM
             overallTree = managementTree.Clone();
             foreach (string ID in toRemove)
                 managementTree.remove(ID);
-            return managementTree.generateTree();
+            return managementTree.generateTree("");
         }
     }
 }
