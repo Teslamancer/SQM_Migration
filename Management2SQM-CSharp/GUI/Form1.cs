@@ -174,12 +174,61 @@ namespace GUI
                 TreeViewBox.Enabled = true;
                 SelectLabel.Text = "Please select Forms for each level to search for Certs";
                 SubmitSuppliers.Visible = false;
+                SubmitFormsButton.Visible = true;
+                SubmitFormsButton.Enabled = true;
             }
             catch (Exception)
             {
                 MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
                 SubmitMaterialsButton.Enabled = true;
                 SubmitMaterialsButton.Visible = true;
+                SubmitFormsButton.Visible = false;
+                SubmitFormsButton.Enabled = false;
+                TreeViewBox.BeginUpdate();
+                TreeViewBox.Nodes.Clear();
+                CopyTree(backup, TreeViewBox);
+                TreeViewBox.EndUpdate();
+                TreeViewBox.Enabled = true;
+                TreeViewBox.Enabled = true;
+            }
+        }
+
+        private void SubmitFormsButton_Click(object sender, EventArgs e)
+        {
+            TreeView backup = new TreeView();
+            try
+            {
+                SubmitFormsButton.Enabled = false;
+                SubmitFormsButton.Visible = false;
+                TreeViewBox.Enabled = false;
+                //cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
+                //cnxn.getForms(cnxn.AccountsForForms);
+                Graph FormsForAccounts = new Graph();                
+                CopyTree(TreeViewBox, backup);
+                //This creates a graph from locations or materials (accounts) to the selected forms (ignoring the checkboxes on the material or location, as these have been previously designated)
+                foreach (TreeNode parent in TreeViewBox.Nodes)
+                {                   
+                    FormsForAccounts.setNameForID(parent.Name, parent.Text);
+                    foreach (TreeNode child in TreeViewBox.getCheckedChildren(parent.Name))
+                    {
+                        FormsForAccounts.addEdge(parent.Name, child.Name);
+                        FormsForAccounts.setNameForID(child.Name, child.Text);
+                    }
+                }
+                TreeViewBox.BeginUpdate();
+                TreeView FormTree = cnxn.getFormTree();
+                TreeViewBox.Nodes.Clear();
+                CopyTree(FormTree, TreeViewBox);
+                TreeViewBox.EndUpdate();
+                TreeViewBox.Enabled = true;
+                SelectLabel.Text = "Please select Forms for each level to search for Certs";
+                SubmitSuppliers.Visible = false;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
+                SubmitFormsButton.Enabled = true;
+                SubmitFormsButton.Visible = true;
                 TreeViewBox.BeginUpdate();
                 TreeViewBox.Nodes.Clear();
                 CopyTree(backup, TreeViewBox);
@@ -209,6 +258,26 @@ namespace GUI
             }
             return toReturn;
         }
+        public static IEnumerable<TreeNode> getCheckedChildren(this TreeView tv, string root)
+        {
+            Dictionary<string, bool> visited = new Dictionary<string, bool>();
+            HashSet<TreeNode> toReturn = new HashSet<TreeNode>();
+            foreach (TreeNode parent in tv.Nodes)
+            {
+                if (parent.Name != root)
+                    continue;
+                if (!visited.ContainsKey(parent.Name))
+                    visited.Add(parent.Name, false);
+                if (visited[parent.Name] == false)
+                {
+                    visited[parent.Name] = true;
+                    if (parent.Checked)
+                        toReturn.Add(parent);
+                    recursiveNodeChecker(visited, parent, toReturn);
+                }
+            }
+            return toReturn;
+        }
 
         private static void recursiveNodeChecker(Dictionary<string, bool> visited, TreeNode parent, HashSet<string> checkedList)
         {
@@ -226,6 +295,26 @@ namespace GUI
 
                         recursiveNodeChecker(visited, child, checkedList);
                     } 
+                }
+            }
+        }
+
+        private static void recursiveNodeChecker(Dictionary<string, bool> visited, TreeNode parent, HashSet<TreeNode> checkedList)
+        {
+            foreach (TreeNode child in parent.Nodes)
+            {
+                //Console.WriteLine(tree.Nodes.IndexOfKey(root));
+
+                if ((visited.ContainsKey(child.Name) && !visited[child.Name]) || !visited.ContainsKey(child.Name))
+                {
+                    visited[child.Name] = true;
+                    if (!child.Name.Equals(""))
+                    {
+                        if (child.Checked)
+                            checkedList.Add(child);
+
+                        recursiveNodeChecker(visited, child, checkedList);
+                    }
                 }
             }
         }

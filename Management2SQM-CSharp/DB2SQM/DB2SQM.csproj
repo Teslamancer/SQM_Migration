@@ -51,5 +51,11 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Graph\Graph.csproj">
+      <Project>{BD7D8828-3088-43E7-8BBC-5EC9FB8CB8D3}</Project>
+      <Name>Graph</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

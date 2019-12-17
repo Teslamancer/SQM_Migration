@@ -38,6 +38,7 @@
             this.SubmitSuppliers = new System.Windows.Forms.Button();
             this.SubmitLocationsButton = new System.Windows.Forms.Button();
             this.SubmitMaterialsButton = new System.Windows.Forms.Button();
+            this.SubmitFormsButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // DataServerBox
@@ -138,11 +139,24 @@
             this.SubmitMaterialsButton.Visible = false;
             this.SubmitMaterialsButton.Click += new System.EventHandler(this.SubmitMaterialsButton_Click);
             // 
+            // SubmitFormsButton
+            // 
+            this.SubmitFormsButton.Enabled = false;
+            this.SubmitFormsButton.Location = new System.Drawing.Point(681, 9);
+            this.SubmitFormsButton.Name = "SubmitFormsButton";
+            this.SubmitFormsButton.Size = new System.Drawing.Size(75, 23);
+            this.SubmitFormsButton.TabIndex = 11;
+            this.SubmitFormsButton.Text = "Submit";
+            this.SubmitFormsButton.UseVisualStyleBackColor = true;
+            this.SubmitFormsButton.Visible = false;
+            this.SubmitFormsButton.Click += new System.EventHandler(this.SubmitFormsButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.SubmitFormsButton);
             this.Controls.Add(this.SubmitMaterialsButton);
             this.Controls.Add(this.SubmitLocationsButton);
             this.Controls.Add(this.SelectLabel);
@@ -172,6 +186,7 @@
         private System.Windows.Forms.Button SubmitSuppliers;
         private System.Windows.Forms.Button SubmitLocationsButton;
         private System.Windows.Forms.Button SubmitMaterialsButton;
+        private System.Windows.Forms.Button SubmitFormsButton;
     }
 }
 

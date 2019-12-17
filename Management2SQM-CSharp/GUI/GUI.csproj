@@ -88,6 +88,10 @@
       <Project>{c8a14439-ebcc-4166-ad9c-1f70057f6adf}</Project>
       <Name>DB2SQM</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Graph\Graph.csproj">
+      <Project>{bd7d8828-3088-43e7-8bbc-5ec9fb8cb8d3}</Project>
+      <Name>Graph</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
