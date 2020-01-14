@@ -34,6 +34,7 @@ namespace DB2SQM
         }
         private Graph managementTree = new Graph();
         private Graph AccountFormTree = new Graph();
+        private Graph AccountFormResultTree = new Graph();
 
         private Graph overallTree = new Graph();
         private Dictionary<string, string> suppliers = new Dictionary<string, string>();

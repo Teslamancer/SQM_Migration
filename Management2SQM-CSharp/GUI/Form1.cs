@@ -156,7 +156,7 @@ namespace GUI
         }
 
         private void SubmitMaterialsButton_Click(object sender, EventArgs e)
-        {//TODO: Materials are not getting forms, fix that
+        {
             TreeView backup = new TreeView();
             try
             {
@@ -193,7 +193,7 @@ namespace GUI
             }
         }
 
-        private void SubmitFormsButton_Click(object sender, EventArgs e)
+        private void SubmitFormsButton_Click(object sender, EventArgs e)//TODO: This should trigger the treeview to populate with Account>Form>Result tree
         {
             TreeView backup = new TreeView();
             try
@@ -237,6 +237,11 @@ namespace GUI
                 TreeViewBox.Enabled = true;
             }
         }
+
+
+
+
+
     }
     public static class extTreeView
     {
