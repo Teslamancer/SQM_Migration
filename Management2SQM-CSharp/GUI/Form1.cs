@@ -201,7 +201,7 @@ namespace GUI
                 SubmitFormsButton.Enabled = false;
                 SubmitFormsButton.Visible = false;
                 TreeViewBox.Enabled = false;
-                //cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
+                cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());//this makes AccountsForForms have the correct tree (I think)
                 //cnxn.getForms(cnxn.AccountsForForms);
                 Graph FormsForAccounts = new Graph();                
                 CopyTree(TreeViewBox, backup);
