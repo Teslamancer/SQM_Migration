@@ -35,6 +35,7 @@ namespace DB2SQM
         private Graph managementTree = new Graph();
         private Graph AccountFormTree = new Graph();
         private Graph AccountFormResultTree = new Graph();
+        private Graph AccountFormResultFileTree = new Graph();
 
         private Graph overallTree = new Graph();
         private Dictionary<string, string> suppliers = new Dictionary<string, string>();
@@ -42,6 +43,7 @@ namespace DB2SQM
         private Dictionary<string, string> materials = new Dictionary<string, string>();
         private Dictionary<string, HashSet<string>> IDtoBFS = new Dictionary<string, HashSet<string>>();
         public HashSet<string> AccountsForForms = new HashSet<string>();
+        
         public DBConnection(string db, string dataserver)
         {
             this.DB = db;
@@ -165,61 +167,67 @@ namespace DB2SQM
             return managementTree.generateTree("");
         }
 
-        public TreeView getResultsTree(Graph AccountForms)
+        public TreeView getResultsTree(Graph AccountToForms)
         {
-            //TODO: Implement getting Tree of top 10 (make this configurable) results for each form for each location
-            throw new NotImplementedException();
+            string getResults;
+
+            AccountFormResultTree = AccountToForms.Clone();
+            foreach(string AccountID in AccountToForms.getRoots())
+            {
+                foreach(string formID in AccountToForms.getChildren(AccountID))
+                {
+                    getResults= "select top 10 AuditResultGlobalID, StartDateLocal from auditresult where accountID = \'" + AccountID + "\' and auditglobalid = \'" + formID + "\'Order by StartDateLocal desc";
+                    using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
+                    {
+                        SqlCommand command = new SqlCommand(getResults, cnxn);
+                        cnxn.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                AccountFormResultTree.setNameForID(reader.GetGuid(0).ToString(), reader.GetDateTime(1).ToString());
+                                AccountFormResultTree.addEdge(formID, reader.GetGuid(0).ToString());
+                            }
+                        }
+                    }
+                }
+            }
+            return AccountFormResultTree.generateTree();
         }
 
-        private Graph getResults(Graph AccountForms)
-        {//TODO: make this function return graph of Account->Form->Results
-            throw new NotImplementedException();
-            //Graph results = new Graph();
+        public Graph getAccountFormResultGraph()
+        {
+            return AccountFormResultTree.Clone();
+        }
 
-            //foreach (string ID in AccountForms.getRoots())
-            //{
-            //    foreach(string auditID in AccountForms.getChildren(ID))
-            //    {
-            //        string getResults = "select distinct aal.AuditGlobalID, al.AuditName from AuditAccountLookup aal join AuditLanguage al on aal.AuditGlobalID = al.AuditGlobalID where aal.AccountID = \'" + ID + "\'";
+        public TreeView getFileTree(Graph FormsToResults)
+        {
+            Graph toReturn = FormsToResults.Clone();
+            foreach (string AccountID in FormsToResults.getRoots())
+            {
+                foreach (string formID in FormsToResults.getChildren(AccountID))
+                {
+                    foreach(string ARGUID in FormsToResults.getChildren(formID))//TODO: make this query return publicID, filename
+                    {
+                        string getFiles = "select f.PublicId from QuestionResult r join QuestionResultBinaryFile f on r.QuestionResultSK = f.QuestionResultSK where r.AuditResultGlobalID = \'" + ARGUID + "\'";
+                        using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + "Stagdata2" + ";" + "database=" + DB + ";"))
+                        {
+                            SqlCommand command = new SqlCommand(getFiles, cnxn);
+                            cnxn.Open();
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    toReturn.setNameForID(reader.GetGuid(0).ToString(), reader.GetDateTime(1).ToString());
+                                    toReturn.addEdge(formID, reader.GetGuid(0).ToString());
+                                }
+                            }
+                        }
 
-            //    }
-            //    //StringBuilder sb = new StringBuilder("(");
-            //    for (int i = 0; i < 10; i++)
-            //    {
-
-            //    } 
-            //}
-            //foreach (string ID in accounts)
-            //{
-            //    // sb.Append("\'" + ID + "\',");
-
-            //    //sb.Append(")");
-            //    //string getFormNames = "select * from auditlanguage where AuditGlobalID=\'";
-            //    using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
-            //    {
-            //        SqlCommand command = new SqlCommand(getForms, cnxn);
-            //        cnxn.Open();
-            //        using (SqlDataReader reader = command.ExecuteReader())
-            //        {
-
-            //            int AuditGlobalIDColNum = reader.GetOrdinal("AuditGlobalID");
-            //            int AuditNameColNum = reader.GetOrdinal("AuditName");
-            //            //int AccountIDColNum = reader.GetOrdinal("AccountID");
-
-            //            while (reader.Read())
-            //            {
-            //                if (!reader.IsDBNull(AuditGlobalIDColNum))
-            //                {
-            //                    AccountFormTree.addEdge(ID, reader.GetGuid(AuditGlobalIDColNum).ToString());
-            //                    AccountFormTree.setNameForID(reader.GetGuid(AuditGlobalIDColNum).ToString(), reader.GetString(AuditNameColNum));
-            //                    AccountFormTree.setNameForID(ID, overallTree.getNameFromID(ID));
-            //                }
-            //                else
-            //                    continue;
-            //            }
-            //        }
-            //    }
-            //}
+                    }
+                }
+            }
+            return toReturn.generateTree();
         }
     }
 }

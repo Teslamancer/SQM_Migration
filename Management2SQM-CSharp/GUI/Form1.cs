@@ -193,7 +193,7 @@ namespace GUI
             }
         }
 
-        private void SubmitFormsButton_Click(object sender, EventArgs e)//TODO: This should trigger the treeview to populate with Account>Form>Result tree
+        private void SubmitFormsButton_Click(object sender, EventArgs e)
         {
             TreeView backup = new TreeView();
             try
@@ -201,27 +201,26 @@ namespace GUI
                 SubmitFormsButton.Enabled = false;
                 SubmitFormsButton.Visible = false;
                 TreeViewBox.Enabled = false;
-                cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());//this makes AccountsForForms have the correct tree (I think)
-                //cnxn.getForms(cnxn.AccountsForForms);
-                Graph FormsForAccounts = new Graph();                
+                //cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
+                //cnxn.getForms(cnxn.AccountsForForms);                               
                 CopyTree(TreeViewBox, backup);
-                //This creates a graph from locations or materials (accounts) to the selected forms (ignoring the checkboxes on the material or location, as these have been previously designated)
-                foreach (TreeNode parent in TreeViewBox.Nodes)
-                {                   
-                    FormsForAccounts.setNameForID(parent.Name, parent.Text);
-                    foreach (TreeNode child in TreeViewBox.getCheckedChildren(parent.Name))
+                Graph AccountsToForms = new Graph();
+                foreach(TreeNode Account in TreeViewBox.Nodes)
+                {
+                    AccountsToForms.setNameForID(Account.Name, Account.Text);
+                    foreach(TreeNode Form in TreeViewBox.getCheckedChildren(Account.Name))
                     {
-                        FormsForAccounts.addEdge(parent.Name, child.Name);
-                        FormsForAccounts.setNameForID(child.Name, child.Text);
+                        AccountsToForms.setNameForID(Form.Name, Form.Text);
+                        AccountsToForms.addEdge(Account.Name, Form.Name);
                     }
                 }
                 TreeViewBox.BeginUpdate();
-                TreeView FormTree = cnxn.getFormTree();
+                TreeView resultsTree = cnxn.getResultsTree(AccountsToForms);
                 TreeViewBox.Nodes.Clear();
-                CopyTree(FormTree, TreeViewBox);
+                CopyTree(resultsTree, TreeViewBox);
                 TreeViewBox.EndUpdate();
                 TreeViewBox.Enabled = true;
-                SelectLabel.Text = "Please select Forms for each level to search for Certs";
+                SelectLabel.Text = "Please select Results from which to pull certifications.";
                 SubmitSuppliers.Visible = false;
             }
             catch (Exception)
@@ -238,10 +237,53 @@ namespace GUI
             }
         }
 
-
-
-
-
+        private void SubmitResults_Click(object sender, EventArgs e)//TODO: This should populate the tree with location>Form>Result>Files
+        {
+            TreeView backup = new TreeView();
+            try
+            {
+                SubmitResults.Enabled = false;
+                SubmitResults.Visible = false;
+                TreeViewBox.Enabled = false;
+                CopyTree(TreeViewBox, backup);
+                Graph AccountsToForms = cnxn.getAccountFormResultGraph();
+                Graph FormsToResults = new Graph();
+                foreach (string AccountID in AccountsToForms.getRoots())
+                {
+                    FormsToResults.setNameForID(AccountID, AccountsToForms.getNameFromID(AccountID));
+                    foreach (string FormID in AccountsToForms.getChildren(AccountID))
+                    {
+                        FormsToResults.setNameForID(FormID, AccountsToForms.getNameFromID(FormID));
+                        FormsToResults.addEdge(AccountID, FormID);
+                        foreach(TreeNode Result in TreeViewBox.getCheckedChildren(FormID))
+                        {
+                            FormsToResults.setNameForID(Result.Name, Result.Text);
+                            FormsToResults.addEdge(FormID, Result.Name);
+                        }
+                    }
+                }
+                TreeViewBox.BeginUpdate();
+                TreeView resultsTree = cnxn.getFileTree(FormsToResults);
+                TreeViewBox.Nodes.Clear();
+                CopyTree(resultsTree, TreeViewBox);
+                TreeViewBox.EndUpdate();
+                TreeViewBox.Enabled = true;
+                SelectLabel.Text = "Please select Results from which to pull certifications.";
+                SubmitResults.Visible = false;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
+                SubmitResults.Enabled = true;
+                SubmitResults.Visible = true;
+                TreeViewBox.BeginUpdate();
+                TreeViewBox.Nodes.Clear();
+                CopyTree(backup, TreeViewBox);
+                TreeViewBox.EndUpdate();
+                TreeViewBox.Enabled = true;
+                TreeViewBox.Enabled = true;
+            }
+        }
     }
     public static class extTreeView
     {
