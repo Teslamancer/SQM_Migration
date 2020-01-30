@@ -32,11 +32,15 @@ namespace GUI
 
         }
 
+        private void onEnvironmentSelected(object sender, EventArgs e)
+        {
+            SubmitButton.Enabled = true;
+        }
         private void SubmitButton_Click(object sender, EventArgs e)
         {
             try
             {
-                cnxn = new DBConnection(DBBox.Text, DataServerBox.Text);
+                cnxn = new DBConnection(DBBox.Text, DataServerBox.Text, EnvironmentBox.SelectedIndex);
                 cnxn.getManagement();
 
                 cnxn.getAccounts();

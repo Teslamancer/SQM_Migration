@@ -40,20 +40,21 @@
             this.SubmitMaterialsButton = new System.Windows.Forms.Button();
             this.SubmitFormsButton = new System.Windows.Forms.Button();
             this.SubmitResults = new System.Windows.Forms.Button();
+            this.EnvironmentBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // DataServerBox
             // 
-            this.DataServerBox.Location = new System.Drawing.Point(83, 12);
+            this.DataServerBox.Location = new System.Drawing.Point(83, 6);
             this.DataServerBox.Name = "DataServerBox";
-            this.DataServerBox.Size = new System.Drawing.Size(100, 20);
+            this.DataServerBox.Size = new System.Drawing.Size(66, 20);
             this.DataServerBox.TabIndex = 1;
             this.DataServerBox.Text = "stagdata1";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 15);
+            this.label1.Location = new System.Drawing.Point(10, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(67, 13);
             this.label1.TabIndex = 2;
@@ -63,7 +64,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(189, 15);
+            this.label2.Location = new System.Drawing.Point(155, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 13);
             this.label2.TabIndex = 3;
@@ -71,14 +72,15 @@
             // 
             // DBBox
             // 
-            this.DBBox.Location = new System.Drawing.Point(251, 12);
+            this.DBBox.Location = new System.Drawing.Point(217, 6);
             this.DBBox.Name = "DBBox";
-            this.DBBox.Size = new System.Drawing.Size(100, 20);
+            this.DBBox.Size = new System.Drawing.Size(65, 20);
             this.DBBox.TabIndex = 4;
             this.DBBox.Text = "csrhstest";
             // 
             // SubmitButton
             // 
+            this.SubmitButton.Enabled = false;
             this.SubmitButton.Location = new System.Drawing.Point(357, 9);
             this.SubmitButton.Name = "SubmitButton";
             this.SubmitButton.Size = new System.Drawing.Size(75, 23);
@@ -95,7 +97,7 @@
             this.TreeViewBox.CheckBoxes = true;
             this.TreeViewBox.Location = new System.Drawing.Point(16, 54);
             this.TreeViewBox.Name = "TreeViewBox";
-            this.TreeViewBox.Size = new System.Drawing.Size(772, 384);
+            this.TreeViewBox.Size = new System.Drawing.Size(1287, 589);
             this.TreeViewBox.TabIndex = 6;
             // 
             // SelectLabel
@@ -155,7 +157,7 @@
             // SubmitResults
             // 
             this.SubmitResults.Enabled = false;
-            this.SubmitResults.Location = new System.Drawing.Point(357, 33);
+            this.SubmitResults.Location = new System.Drawing.Point(762, 9);
             this.SubmitResults.Name = "SubmitResults";
             this.SubmitResults.Size = new System.Drawing.Size(75, 23);
             this.SubmitResults.TabIndex = 12;
@@ -164,11 +166,26 @@
             this.SubmitResults.Visible = false;
             this.SubmitResults.Click += new System.EventHandler(this.SubmitResults_Click);
             // 
+            // EnvironmentBox
+            // 
+            this.EnvironmentBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.EnvironmentBox.FormattingEnabled = true;
+            this.EnvironmentBox.Items.AddRange(new object[] {
+            "Production",
+            "Staging",
+            "QA"});
+            this.EnvironmentBox.Location = new System.Drawing.Point(289, 6);
+            this.EnvironmentBox.Name = "EnvironmentBox";
+            this.EnvironmentBox.Size = new System.Drawing.Size(62, 21);
+            this.EnvironmentBox.TabIndex = 13;
+            this.EnvironmentBox.SelectedIndexChanged += new System.EventHandler(this.onEnvironmentSelected);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1315, 655);
+            this.Controls.Add(this.EnvironmentBox);
             this.Controls.Add(this.SubmitResults);
             this.Controls.Add(this.SubmitFormsButton);
             this.Controls.Add(this.SubmitMaterialsButton);
@@ -202,6 +219,7 @@
         private System.Windows.Forms.Button SubmitMaterialsButton;
         private System.Windows.Forms.Button SubmitFormsButton;
         private System.Windows.Forms.Button SubmitResults;
+        private System.Windows.Forms.ComboBox EnvironmentBox;
     }
 }
 

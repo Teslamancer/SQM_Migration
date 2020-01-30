@@ -32,6 +32,12 @@ namespace DB2SQM
             get;
             private set;
         }
+        public string BFSServer
+        {
+            get;
+            private set;
+        }
+
         private Graph managementTree = new Graph();
         private Graph AccountFormTree = new Graph();
         private Graph AccountFormResultTree = new Graph();
@@ -44,10 +50,25 @@ namespace DB2SQM
         private Dictionary<string, HashSet<string>> IDtoBFS = new Dictionary<string, HashSet<string>>();
         public HashSet<string> AccountsForForms = new HashSet<string>();
         
-        public DBConnection(string db, string dataserver)
+        public DBConnection(string db, string dataserver, int Environment)
         {
             this.DB = db;
             this.DataServer = dataserver;
+            switch (Environment)
+            {
+                case 0:
+                    this.BFSServer = "dmsdata5";
+                    break;
+                case 1:
+                    this.BFSServer = "stagdata2";
+                    break;
+                case 2:
+                    this.BFSServer = "devopsdata1";
+                    break;
+                default:
+                    this.BFSServer = "dmsdata5";
+            }
+
         }
         /// <summary>
         /// Adds all Management Records into a graph and a dictionary that can retrieve their name from their ID
@@ -210,7 +231,7 @@ namespace DB2SQM
                     foreach(string ARGUID in FormsToResults.getChildren(formID))//TODO: make this query return publicID, filename
                     {
                         string getFiles = "select f.PublicId from QuestionResult r join QuestionResultBinaryFile f on r.QuestionResultSK = f.QuestionResultSK where r.AuditResultGlobalID = \'" + ARGUID + "\'";
-                        using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + "Stagdata2" + ";" + "database=" + DB + ";"))
+                        using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + this.DataServer + ";" + "database=" + DB + ";"))
                         {
                             SqlCommand command = new SqlCommand(getFiles, cnxn);
                             cnxn.Open();
