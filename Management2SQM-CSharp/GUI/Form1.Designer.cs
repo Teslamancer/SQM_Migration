@@ -38,8 +38,6 @@
             this.SubmitSuppliers = new System.Windows.Forms.Button();
             this.SubmitLocationsButton = new System.Windows.Forms.Button();
             this.SubmitMaterialsButton = new System.Windows.Forms.Button();
-            this.SubmitFormsButton = new System.Windows.Forms.Button();
-            this.SubmitResults = new System.Windows.Forms.Button();
             this.EnvironmentBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
@@ -142,30 +140,6 @@
             this.SubmitMaterialsButton.Visible = false;
             this.SubmitMaterialsButton.Click += new System.EventHandler(this.SubmitMaterialsButton_Click);
             // 
-            // SubmitFormsButton
-            // 
-            this.SubmitFormsButton.Enabled = false;
-            this.SubmitFormsButton.Location = new System.Drawing.Point(681, 9);
-            this.SubmitFormsButton.Name = "SubmitFormsButton";
-            this.SubmitFormsButton.Size = new System.Drawing.Size(75, 23);
-            this.SubmitFormsButton.TabIndex = 11;
-            this.SubmitFormsButton.Text = "Submit";
-            this.SubmitFormsButton.UseVisualStyleBackColor = true;
-            this.SubmitFormsButton.Visible = false;
-            this.SubmitFormsButton.Click += new System.EventHandler(this.SubmitFormsButton_Click);
-            // 
-            // SubmitResults
-            // 
-            this.SubmitResults.Enabled = false;
-            this.SubmitResults.Location = new System.Drawing.Point(762, 9);
-            this.SubmitResults.Name = "SubmitResults";
-            this.SubmitResults.Size = new System.Drawing.Size(75, 23);
-            this.SubmitResults.TabIndex = 12;
-            this.SubmitResults.Text = "Submit";
-            this.SubmitResults.UseVisualStyleBackColor = true;
-            this.SubmitResults.Visible = false;
-            this.SubmitResults.Click += new System.EventHandler(this.SubmitResults_Click);
-            // 
             // EnvironmentBox
             // 
             this.EnvironmentBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -186,8 +160,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1315, 655);
             this.Controls.Add(this.EnvironmentBox);
-            this.Controls.Add(this.SubmitResults);
-            this.Controls.Add(this.SubmitFormsButton);
             this.Controls.Add(this.SubmitMaterialsButton);
             this.Controls.Add(this.SubmitLocationsButton);
             this.Controls.Add(this.SelectLabel);
@@ -217,8 +189,6 @@
         private System.Windows.Forms.Button SubmitSuppliers;
         private System.Windows.Forms.Button SubmitLocationsButton;
         private System.Windows.Forms.Button SubmitMaterialsButton;
-        private System.Windows.Forms.Button SubmitFormsButton;
-        private System.Windows.Forms.Button SubmitResults;
         private System.Windows.Forms.ComboBox EnvironmentBox;
     }
 }

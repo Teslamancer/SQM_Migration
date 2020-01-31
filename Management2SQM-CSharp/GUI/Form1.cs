@@ -99,6 +99,7 @@ namespace GUI
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
                 cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
+                //cnxn.addSuppliers(TreeViewBox.getChecked());
                 TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
                 TreeViewBox.Nodes.Clear();
                 CopyTree(LocationTree, TreeViewBox);
@@ -135,6 +136,7 @@ namespace GUI
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
                 cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
+                //cnxn.addLocations(TreeViewBox.getChecked());
                 TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
                 TreeViewBox.Nodes.Clear();
                 CopyTree(LocationTree, TreeViewBox);
@@ -167,8 +169,9 @@ namespace GUI
                 SubmitMaterialsButton.Enabled = false;
                 SubmitMaterialsButton.Visible = false;
                 TreeViewBox.Enabled = false;
+                cnxn.sendtoSQM(TreeViewBox.getChecked());
                 cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
-                cnxn.getForms(cnxn.AccountsForForms);
+                //cnxn.getForms(cnxn.AccountsForForms);
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
                 TreeView FormTree = cnxn.getFormTree();
@@ -178,16 +181,16 @@ namespace GUI
                 TreeViewBox.Enabled = true;
                 SelectLabel.Text = "Please select Forms for each level to search for Certs";
                 SubmitSuppliers.Visible = false;
-                SubmitFormsButton.Visible = true;
-                SubmitFormsButton.Enabled = true;
+               // SubmitFormsButton.Visible = true;
+                //SubmitFormsButton.Enabled = true;
             }
             catch (Exception)
             {
                 MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
                 SubmitMaterialsButton.Enabled = true;
                 SubmitMaterialsButton.Visible = true;
-                SubmitFormsButton.Visible = false;
-                SubmitFormsButton.Enabled = false;
+               // SubmitFormsButton.Visible = false;
+               // SubmitFormsButton.Enabled = false;
                 TreeViewBox.BeginUpdate();
                 TreeViewBox.Nodes.Clear();
                 CopyTree(backup, TreeViewBox);
@@ -197,97 +200,97 @@ namespace GUI
             }
         }
 
-        private void SubmitFormsButton_Click(object sender, EventArgs e)
-        {
-            TreeView backup = new TreeView();
-            try
-            {
-                SubmitFormsButton.Enabled = false;
-                SubmitFormsButton.Visible = false;
-                TreeViewBox.Enabled = false;
-                //cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
-                //cnxn.getForms(cnxn.AccountsForForms);                               
-                CopyTree(TreeViewBox, backup);
-                Graph AccountsToForms = new Graph();
-                foreach(TreeNode Account in TreeViewBox.Nodes)
-                {
-                    AccountsToForms.setNameForID(Account.Name, Account.Text);
-                    foreach(TreeNode Form in TreeViewBox.getCheckedChildren(Account.Name))
-                    {
-                        AccountsToForms.setNameForID(Form.Name, Form.Text);
-                        AccountsToForms.addEdge(Account.Name, Form.Name);
-                    }
-                }
-                TreeViewBox.BeginUpdate();
-                TreeView resultsTree = cnxn.getResultsTree(AccountsToForms);
-                TreeViewBox.Nodes.Clear();
-                CopyTree(resultsTree, TreeViewBox);
-                TreeViewBox.EndUpdate();
-                TreeViewBox.Enabled = true;
-                SelectLabel.Text = "Please select Results from which to pull certifications.";
-                SubmitSuppliers.Visible = false;
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
-                SubmitFormsButton.Enabled = true;
-                SubmitFormsButton.Visible = true;
-                TreeViewBox.BeginUpdate();
-                TreeViewBox.Nodes.Clear();
-                CopyTree(backup, TreeViewBox);
-                TreeViewBox.EndUpdate();
-                TreeViewBox.Enabled = true;
-                TreeViewBox.Enabled = true;
-            }
-        }
+        //private void SubmitFormsButton_Click(object sender, EventArgs e)
+        //{
+        //    TreeView backup = new TreeView();
+        //    try
+        //    {
+        //        SubmitFormsButton.Enabled = false;
+        //        SubmitFormsButton.Visible = false;
+        //        TreeViewBox.Enabled = false;
+        //        //cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
+        //        //cnxn.getForms(cnxn.AccountsForForms);                               
+        //        CopyTree(TreeViewBox, backup);
+        //        Graph AccountsToForms = new Graph();
+        //        foreach(TreeNode Account in TreeViewBox.Nodes)
+        //        {
+        //            AccountsToForms.setNameForID(Account.Name, Account.Text);
+        //            foreach(TreeNode Form in TreeViewBox.getCheckedChildren(Account.Name))
+        //            {
+        //                AccountsToForms.setNameForID(Form.Name, Form.Text);
+        //                AccountsToForms.addEdge(Account.Name, Form.Name);
+        //            }
+        //        }
+        //        TreeViewBox.BeginUpdate();
+        //        TreeView resultsTree = cnxn.getResultsTree(AccountsToForms);
+        //        TreeViewBox.Nodes.Clear();
+        //        CopyTree(resultsTree, TreeViewBox);
+        //        TreeViewBox.EndUpdate();
+        //        TreeViewBox.Enabled = true;
+        //        SelectLabel.Text = "Please select Results from which to pull certifications.";
+        //        SubmitSuppliers.Visible = false;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
+        //        SubmitFormsButton.Enabled = true;
+        //        SubmitFormsButton.Visible = true;
+        //        TreeViewBox.BeginUpdate();
+        //        TreeViewBox.Nodes.Clear();
+        //        CopyTree(backup, TreeViewBox);
+        //        TreeViewBox.EndUpdate();
+        //        TreeViewBox.Enabled = true;
+        //        TreeViewBox.Enabled = true;
+        //    }
+        //}
 
-        private void SubmitResults_Click(object sender, EventArgs e)//TODO: This should populate the tree with location>Form>Result>Files
-        {
-            TreeView backup = new TreeView();
-            try
-            {
-                SubmitResults.Enabled = false;
-                SubmitResults.Visible = false;
-                TreeViewBox.Enabled = false;
-                CopyTree(TreeViewBox, backup);
-                Graph AccountsToForms = cnxn.getAccountFormResultGraph();
-                Graph FormsToResults = new Graph();
-                foreach (string AccountID in AccountsToForms.getRoots())
-                {
-                    FormsToResults.setNameForID(AccountID, AccountsToForms.getNameFromID(AccountID));
-                    foreach (string FormID in AccountsToForms.getChildren(AccountID))
-                    {
-                        FormsToResults.setNameForID(FormID, AccountsToForms.getNameFromID(FormID));
-                        FormsToResults.addEdge(AccountID, FormID);
-                        foreach(TreeNode Result in TreeViewBox.getCheckedChildren(FormID))
-                        {
-                            FormsToResults.setNameForID(Result.Name, Result.Text);
-                            FormsToResults.addEdge(FormID, Result.Name);
-                        }
-                    }
-                }
-                TreeViewBox.BeginUpdate();
-                TreeView resultsTree = cnxn.getFileTree(FormsToResults);
-                TreeViewBox.Nodes.Clear();
-                CopyTree(resultsTree, TreeViewBox);
-                TreeViewBox.EndUpdate();
-                TreeViewBox.Enabled = true;
-                SelectLabel.Text = "Please select Results from which to pull certifications.";
-                SubmitResults.Visible = false;
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
-                SubmitResults.Enabled = true;
-                SubmitResults.Visible = true;
-                TreeViewBox.BeginUpdate();
-                TreeViewBox.Nodes.Clear();
-                CopyTree(backup, TreeViewBox);
-                TreeViewBox.EndUpdate();
-                TreeViewBox.Enabled = true;
-                TreeViewBox.Enabled = true;
-            }
-        }
+        //private void SubmitResults_Click(object sender, EventArgs e)//TODO: This should populate the tree with location>Form>Result>Files
+        //{
+        //    TreeView backup = new TreeView();
+        //    try
+        //    {
+        //        SubmitResults.Enabled = false;
+        //        SubmitResults.Visible = false;
+        //        TreeViewBox.Enabled = false;
+        //        CopyTree(TreeViewBox, backup);
+        //        Graph AccountsToForms = cnxn.getAccountFormResultGraph();
+        //        Graph FormsToResults = new Graph();
+        //        foreach (string AccountID in AccountsToForms.getRoots())
+        //        {
+        //            FormsToResults.setNameForID(AccountID, AccountsToForms.getNameFromID(AccountID));
+        //            foreach (string FormID in AccountsToForms.getChildren(AccountID))
+        //            {
+        //                FormsToResults.setNameForID(FormID, AccountsToForms.getNameFromID(FormID));
+        //                FormsToResults.addEdge(AccountID, FormID);
+        //                foreach(TreeNode Result in TreeViewBox.getCheckedChildren(FormID))
+        //                {
+        //                    FormsToResults.setNameForID(Result.Name, Result.Text);
+        //                    FormsToResults.addEdge(FormID, Result.Name);
+        //                }
+        //            }
+        //        }
+        //        TreeViewBox.BeginUpdate();
+        //        //TreeView resultsTree = cnxn.getFileTree(FormsToResults);
+        //        TreeViewBox.Nodes.Clear();
+        //        //CopyTree(resultsTree, TreeViewBox);
+        //        TreeViewBox.EndUpdate();
+        //        TreeViewBox.Enabled = true;
+        //        SelectLabel.Text = "Please select Results from which to pull certifications.";
+        //        SubmitResults.Visible = false;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        MessageBox.Show("Invalid Settings!", "Error", MessageBoxButtons.OK);
+        //        SubmitResults.Enabled = true;
+        //        SubmitResults.Visible = true;
+        //        TreeViewBox.BeginUpdate();
+        //        TreeViewBox.Nodes.Clear();
+        //        CopyTree(backup, TreeViewBox);
+        //        TreeViewBox.EndUpdate();
+        //        TreeViewBox.Enabled = true;
+        //        TreeViewBox.Enabled = true;
+        //    }
+        //}
     }
     public static class extTreeView
     {

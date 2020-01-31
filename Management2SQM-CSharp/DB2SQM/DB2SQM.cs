@@ -40,13 +40,14 @@ namespace DB2SQM
 
         private Graph managementTree = new Graph();
         private Graph AccountFormTree = new Graph();
+
+        private Graph SQMTree = new Graph();
         private Graph AccountFormResultTree = new Graph();
         private Graph AccountFormResultFileTree = new Graph();
 
+        private Graph SupplierLocationMaterial = new Graph();
+
         private Graph overallTree = new Graph();
-        private Dictionary<string, string> suppliers = new Dictionary<string, string>();
-        private Dictionary<string, string> locations = new Dictionary<string, string>();
-        private Dictionary<string, string> materials = new Dictionary<string, string>();
         private Dictionary<string, HashSet<string>> IDtoBFS = new Dictionary<string, HashSet<string>>();
         public HashSet<string> AccountsForForms = new HashSet<string>();
         
@@ -67,6 +68,7 @@ namespace DB2SQM
                     break;
                 default:
                     this.BFSServer = "dmsdata5";
+                    break;
             }
 
         }
@@ -120,11 +122,37 @@ namespace DB2SQM
                     }
                 }
             }
+            overallTree = managementTree.Clone();
+            SQMTree = overallTree.Clone();
         }
         public void printDOT()
         {
             Console.Write(this.managementTree.toDOT());
         }       
+
+        //public void addSuppliers(IEnumerable<string> suppliers)
+        //{
+        //    foreach(string supplierID in suppliers)
+        //    {
+        //        SupplierLocationMaterial.setNameForID(supplierID, managementTree.getNameFromID(supplierID));
+        //        SupplierLocationMaterial.addEdge(supplierID, "");
+        //    }
+        //}
+
+        //public void addLocations(IEnumerable<string> Locations)
+        //{
+        //    foreach(string LocationID in Locations)
+        //    {
+        //        SupplierLocationMaterial.setNameForID(LocationID, managementTree.getNameFromID(LocationID));
+        //        foreach(string supplier in SupplierLocationMaterial.getRoots())
+        //        {
+        //            if (managementTree.getChildren(supplier).Contains(LocationID))
+        //            {
+        //                SupplierLocationMaterial.addEdge(supplier, LocationID);
+        //            }
+        //        }
+        //    }
+        //}
 
 
         
@@ -138,117 +166,135 @@ namespace DB2SQM
             return AccountFormTree.generateTree();
         }
 
-        public void getFiles()
+        public void sendtoSQM(IEnumerable<string> Materials)
         {
-            string getFiles = "";
-        }
-        //THIS WILL RUN FOR MANAGEMENTS TOO
-        public void getForms(IEnumerable<string> accounts)
-        {
-            //StringBuilder sb = new StringBuilder("(");
-            foreach (string ID in accounts)
+            foreach(string root in overallTree.getRoots())
             {
-               // sb.Append("\'" + ID + "\',");
-
-                //sb.Append(")");
-                string getForms = "select distinct aal.AuditGlobalID, al.AuditName from AuditAccountLookup aal join AuditLanguage al on aal.AuditGlobalID = al.AuditGlobalID where aal.AccountID = \'" + ID + "\'";
-                //string getFormNames = "select * from auditlanguage where AuditGlobalID=\'";
-                using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
+                if (managementTree.getRoots().Contains(root) && root !="")
                 {
-                    SqlCommand command = new SqlCommand(getForms, cnxn);
-                    cnxn.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    SQMTree.remove(root);
+                }
+                foreach(string child in overallTree.getChildren(root))
+                {
+                    if (managementTree.getChildren(root).Contains(child))
                     {
-
-                        int AuditGlobalIDColNum = reader.GetOrdinal("AuditGlobalID");
-                        int AuditNameColNum = reader.GetOrdinal("AuditName");
-                        //int AccountIDColNum = reader.GetOrdinal("AccountID");
-                        
-                        while (reader.Read())
-                        {
-                            if (!reader.IsDBNull(AuditGlobalIDColNum))
-                            {
-                                AccountFormTree.addEdge(ID, reader.GetGuid(AuditGlobalIDColNum).ToString());
-                                AccountFormTree.setNameForID(reader.GetGuid(AuditGlobalIDColNum).ToString(), reader.GetString(AuditNameColNum));
-                                AccountFormTree.setNameForID(ID, overallTree.getNameFromID(ID));
-                            }                                
-                            else
-                                continue;
-                        }
+                        SQMTree.remove(child);
                     }
                 }
             }
+            Console.WriteLine(SQMTree.toDOT());
+            return;
         }
+        //public void getFiles()
+        //{
+        //    string getFiles = "";
+        //}
+        //THIS WILL RUN FOR MANAGEMENTS TOO
+        //public void getForms(IEnumerable<string> accounts)
+        //{
+        //    //StringBuilder sb = new StringBuilder("(");
+        //    foreach (string ID in accounts)
+        //    {
+        //       // sb.Append("\'" + ID + "\',");
+
+        //        //sb.Append(")");
+        //        string getForms = "select distinct aal.AuditGlobalID, al.AuditName from AuditAccountLookup aal join AuditLanguage al on aal.AuditGlobalID = al.AuditGlobalID where aal.AccountID = \'" + ID + "\'";
+        //        //string getFormNames = "select * from auditlanguage where AuditGlobalID=\'";
+        //        using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
+        //        {
+        //            SqlCommand command = new SqlCommand(getForms, cnxn);
+        //            cnxn.Open();
+        //            using (SqlDataReader reader = command.ExecuteReader())
+        //            {
+
+        //                int AuditGlobalIDColNum = reader.GetOrdinal("AuditGlobalID");
+        //                int AuditNameColNum = reader.GetOrdinal("AuditName");
+        //                //int AccountIDColNum = reader.GetOrdinal("AccountID");
+                        
+        //                while (reader.Read())
+        //                {
+        //                    if (!reader.IsDBNull(AuditGlobalIDColNum))
+        //                    {
+        //                        AccountFormTree.addEdge(ID, reader.GetGuid(AuditGlobalIDColNum).ToString());
+        //                        AccountFormTree.setNameForID(reader.GetGuid(AuditGlobalIDColNum).ToString(), reader.GetString(AuditNameColNum));
+        //                        AccountFormTree.setNameForID(ID, overallTree.getNameFromID(ID));
+        //                    }                                
+        //                    else
+        //                        continue;
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         public TreeView getSQMLocationOptionsTree(IEnumerable<string> toRemove)
         {
-            overallTree = managementTree.Clone();
-            foreach (string ID in toRemove)
-                managementTree.remove(ID);
+            
+            //Console.WriteLine(SQMTree.toDOT());
             return managementTree.generateTree("");
         }
 
-        public TreeView getResultsTree(Graph AccountToForms)
-        {
-            string getResults;
+        //public TreeView getResultsTree(Graph AccountToForms)
+        //{
+        //    string getResults;
 
-            AccountFormResultTree = AccountToForms.Clone();
-            foreach(string AccountID in AccountToForms.getRoots())
-            {
-                foreach(string formID in AccountToForms.getChildren(AccountID))
-                {
-                    getResults= "select top 10 AuditResultGlobalID, StartDateLocal from auditresult where accountID = \'" + AccountID + "\' and auditglobalid = \'" + formID + "\'Order by StartDateLocal desc";
-                    using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
-                    {
-                        SqlCommand command = new SqlCommand(getResults, cnxn);
-                        cnxn.Open();
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                AccountFormResultTree.setNameForID(reader.GetGuid(0).ToString(), reader.GetDateTime(1).ToString());
-                                AccountFormResultTree.addEdge(formID, reader.GetGuid(0).ToString());
-                            }
-                        }
-                    }
-                }
-            }
-            return AccountFormResultTree.generateTree();
-        }
+        //    AccountFormResultTree = AccountToForms.Clone();
+        //    foreach(string AccountID in AccountToForms.getRoots())
+        //    {
+        //        foreach(string formID in AccountToForms.getChildren(AccountID))
+        //        {
+        //            getResults= "select top 10 AuditResultGlobalID, StartDateLocal from auditresult where accountID = \'" + AccountID + "\' and auditglobalid = \'" + formID + "\'Order by StartDateLocal desc";
+        //            using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
+        //            {
+        //                SqlCommand command = new SqlCommand(getResults, cnxn);
+        //                cnxn.Open();
+        //                using (SqlDataReader reader = command.ExecuteReader())
+        //                {
+        //                    while (reader.Read())
+        //                    {
+        //                        AccountFormResultTree.setNameForID(reader.GetGuid(0).ToString(), reader.GetDateTime(1).ToString());
+        //                        AccountFormResultTree.addEdge(formID, reader.GetGuid(0).ToString());
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return AccountFormResultTree.generateTree();
+        //}
 
-        public Graph getAccountFormResultGraph()
-        {
-            return AccountFormResultTree.Clone();
-        }
+        //public Graph getAccountFormResultGraph()
+        //{
+        //    return AccountFormResultTree.Clone();
+        //}
 
-        public TreeView getFileTree(Graph FormsToResults)
-        {
-            Graph toReturn = FormsToResults.Clone();
-            foreach (string AccountID in FormsToResults.getRoots())
-            {
-                foreach (string formID in FormsToResults.getChildren(AccountID))
-                {
-                    foreach(string ARGUID in FormsToResults.getChildren(formID))//TODO: make this query return publicID, filename
-                    {
-                        string getFiles = "select f.PublicId from QuestionResult r join QuestionResultBinaryFile f on r.QuestionResultSK = f.QuestionResultSK where r.AuditResultGlobalID = \'" + ARGUID + "\'";
-                        using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + this.DataServer + ";" + "database=" + DB + ";"))
-                        {
-                            SqlCommand command = new SqlCommand(getFiles, cnxn);
-                            cnxn.Open();
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    toReturn.setNameForID(reader.GetGuid(0).ToString(), reader.GetDateTime(1).ToString());
-                                    toReturn.addEdge(formID, reader.GetGuid(0).ToString());
-                                }
-                            }
-                        }
+        //public TreeView getImageTree(Graph FormsToResults)
+        //{
+        //    Graph toReturn = FormsToResults.Clone();
+        //    foreach (string AccountID in FormsToResults.getRoots())
+        //    {
+        //        foreach (string formID in FormsToResults.getChildren(AccountID))
+        //        {
+        //            foreach(string ARGUID in FormsToResults.getChildren(formID))//TODO: make this query return publicID, filename, Base64 if Image?
+        //            {
+        //                string getFiles = "select f.PublicId from QuestionResult r join QuestionResultBinaryFile f on r.QuestionResultSK = f.QuestionResultSK where r.AuditResultGlobalID = \'" + ARGUID + "\'";
+        //                using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + this.DataServer + ";" + "database=" + DB + ";"))
+        //                {
+        //                    SqlCommand command = new SqlCommand(getFiles, cnxn);
+        //                    cnxn.Open();
+        //                    using (SqlDataReader reader = command.ExecuteReader())
+        //                    {
+        //                        while (reader.Read())
+        //                        {
+        //                            toReturn.setNameForID(reader.GetGuid(0).ToString(), reader.GetDateTime(1).ToString());
+        //                            toReturn.addEdge(formID, reader.GetGuid(0).ToString());
+        //                        }
+        //                    }
+        //                }
 
-                    }
-                }
-            }
-            return toReturn.generateTree();
-        }
+        //            }
+        //        }
+        //    }
+        //    return toReturn.generateTree();
+        //}
     }
 }
