@@ -99,6 +99,7 @@ namespace GUI
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
                 cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
+                cnxn.updateSQMTree(TreeViewBox.getChecked(),1);
                 //cnxn.addSuppliers(TreeViewBox.getChecked());
                 TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
                 TreeViewBox.Nodes.Clear();
@@ -136,6 +137,7 @@ namespace GUI
                 CopyTree(TreeViewBox, backup);
                 TreeViewBox.BeginUpdate();
                 cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
+                cnxn.updateSQMTree(TreeViewBox.getChecked(), 2);
                 //cnxn.addLocations(TreeViewBox.getChecked());
                 TreeView LocationTree = cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
                 TreeViewBox.Nodes.Clear();
@@ -169,7 +171,9 @@ namespace GUI
                 SubmitMaterialsButton.Enabled = false;
                 SubmitMaterialsButton.Visible = false;
                 TreeViewBox.Enabled = false;
-                cnxn.sendtoSQM(TreeViewBox.getChecked());
+                //cnxn.getSQMLocationOptionsTree(TreeViewBox.getChecked());
+                cnxn.updateSQMTree(TreeViewBox.getChecked(), 3);
+                cnxn.sendtoSQM();
                 cnxn.AccountsForForms.UnionWith(TreeViewBox.getChecked());
                 //cnxn.getForms(cnxn.AccountsForForms);
                 CopyTree(TreeViewBox, backup);
@@ -181,8 +185,9 @@ namespace GUI
                 TreeViewBox.Enabled = true;
                 SelectLabel.Text = "Please select Forms for each level to search for Certs";
                 SubmitSuppliers.Visible = false;
-               // SubmitFormsButton.Visible = true;
+                // SubmitFormsButton.Visible = true;
                 //SubmitFormsButton.Enabled = true;
+                Application.Exit();
             }
             catch (Exception)
             {

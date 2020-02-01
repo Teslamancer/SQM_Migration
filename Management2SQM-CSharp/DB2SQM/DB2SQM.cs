@@ -123,7 +123,58 @@ namespace DB2SQM
                 }
             }
             overallTree = managementTree.Clone();
-            SQMTree = overallTree.Clone();
+            //SQMTree = overallTree.Clone();
+        }
+
+        public void updateSQMTree(IEnumerable<string> checkedItems, int type)
+        {
+            switch (type)
+            {
+                case 1:
+                    foreach(string SupplierID in checkedItems)
+                    {
+                        SQMTree.setNameForID(SupplierID, overallTree.getNameFromID(SupplierID));
+                        SQMTree.addEdge("", SupplierID);
+                    }
+                    break;
+                case 2:
+                    foreach(string supplier in SQMTree.getChildren(""))
+                    {
+                        if(supplier != "")
+                        {
+                            foreach(string locationID in checkedItems)
+                            {
+                                if (overallTree.getChildren(supplier).Contains(locationID))
+                                {
+                                    SQMTree.setNameForID(locationID, overallTree.getNameFromID(locationID));
+                                    SQMTree.addEdge(supplier, locationID);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 3:
+                    foreach (string supplier in SQMTree.getChildren(""))
+                    {
+                        if (supplier != "")
+                        {
+                            foreach (string location in SQMTree.getChildren(supplier))
+                            {
+                                foreach(string materialID in checkedItems)
+                                {
+                                    if (overallTree.getChildren(location) != null && overallTree.getChildren(location).Contains(materialID))
+                                    {
+                                        SQMTree.setNameForID(materialID, overallTree.getNameFromID(materialID));
+                                        SQMTree.addEdge(location, materialID);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
         public void printDOT()
         {
@@ -166,24 +217,52 @@ namespace DB2SQM
             return AccountFormTree.generateTree();
         }
 
-        public void sendtoSQM(IEnumerable<string> Materials)
+
+
+        public void sendtoSQM()
         {
-            foreach(string root in overallTree.getRoots())
+            //foreach(string root in overallTree.getRoots())
+            //{
+            //    if (managementTree.getRoots().Contains(root) && root !="")
+            //    {
+            //        SQMTree.remove(root);
+            //    }
+            //foreach(string child in overallTree.getChildren(root))
+            //{
+            //    if (managementTree.getChildren(root) != null && managementTree.getChildren(root).Contains(child))
+            //    {
+            //        SQMTree.remove(child);
+            //    }
+            //}
+            //}
+            //string insertTree = "";
+            using (SqlConnection cnxn = new SqlConnection("Integrated Security=true;" + "Server=" + DataServer + ";" + "database=" + DB + ";"))
             {
-                if (managementTree.getRoots().Contains(root) && root !="")
+                cnxn.Open();
+                foreach(string supplier in SQMTree.getChildren(""))
                 {
-                    SQMTree.remove(root);
+                    string insertSupplier = "INSERT INTO Target (TargetName, TargetTypeId, TargetStatusId) VALUES('" + SQMTree.getNameFromID(supplier)+"','3','13');SELECT CAST(Scope_Identity() AS int);";
+                    SqlCommand insertSupplierCommand = new SqlCommand(insertSupplier, cnxn);
+                    int supplierSQLID = (int)insertSupplierCommand.ExecuteScalar();
+                    if (SQMTree.getChildren(supplier) != null)
+                        foreach (string location in SQMTree.getChildren(supplier))
+                        {
+                            string insertLocation = "INSERT INTO Target (TargetName, TargetTypeId,TargetParentId, TargetStatusId) VALUES(\'" + SQMTree.getNameFromID(location) + "\',1,"+supplierSQLID+ ",13);SELECT CAST(Scope_Identity() AS int);";
+                            SqlCommand insertLocationCommand = new SqlCommand(insertLocation, cnxn);
+                            int LocationSQLID = (int)insertLocationCommand.ExecuteScalar();
+                            if(SQMTree.getChildren(location) != null)
+                                foreach(string material in SQMTree.getChildren(location))
+                                {
+                                    string insertMaterial = "INSERT INTO Target (TargetName, TargetTypeId,TargetParentId, TargetStatusId) VALUES(\'" + SQMTree.getNameFromID(material) + "\',2," + LocationSQLID + ",13);";
+                                    SqlCommand insertMaterialCommand = new SqlCommand(insertMaterial, cnxn);
+                                    //string LocationSQLID = (string)insertLocationCommand.ExecuteScalar();
+                                    insertMaterialCommand.ExecuteNonQuery();
+                                }
+                        }
                 }
-                foreach(string child in overallTree.getChildren(root))
-                {
-                    if (managementTree.getChildren(root).Contains(child))
-                    {
-                        SQMTree.remove(child);
-                    }
-                }
+                
+                
             }
-            Console.WriteLine(SQMTree.toDOT());
-            return;
         }
         //public void getFiles()
         //{
@@ -229,8 +308,10 @@ namespace DB2SQM
 
         public TreeView getSQMLocationOptionsTree(IEnumerable<string> toRemove)
         {
-            
+
             //Console.WriteLine(SQMTree.toDOT());
+            foreach (string ID in toRemove)
+                managementTree.remove(ID);
             return managementTree.generateTree("");
         }
 
